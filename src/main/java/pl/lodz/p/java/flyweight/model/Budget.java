@@ -4,6 +4,8 @@ import java.util.Date;
 import org.springframework.data.annotation.Id;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,15 +16,19 @@ import lombok.Setter;
 public class Budget {
 
     @Id
-    private long id;
+    private UUID id;
+
     private Set<Permission> permissions = new HashSet<Permission>(0);
 
     private Set<Expense> expenses = new HashSet<Expense>(0);
+
     private Set<Income> incomes = new HashSet<Income>(0);
-    
+
     private double balance;
+
     private double plannedAmount;
+
     private Date dateFrom;
+
     private Date dateTo;
-    
 }

@@ -7,4 +7,3 @@ public interface MongoCustom {
     public void setMongoTemplate(MongoTemplate mongoTemplate);
 
 }
-

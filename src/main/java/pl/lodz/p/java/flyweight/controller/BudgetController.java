@@ -9,12 +9,11 @@ import pl.lodz.p.java.flyweight.service.BudgetService;
 @RestController
 @RequestMapping(value = "/budget", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BudgetController {
-        private final BudgetService budgetService;
+
+    private final BudgetService budgetService;
 
     @Inject
     public BudgetController(final BudgetService budgetService) {
         this.budgetService = budgetService;
     }
-    
-    
 }
