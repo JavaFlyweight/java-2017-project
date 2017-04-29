@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Welcome page</title>
+</head>
+<body>
+	<div th:if="${userName} != null">
+		Hello <a th:text="${userName}"></a> <a href="/logout">Logout</a>
+	</div>
+	<div th:if="${userName} == null">
+		This is a welcome page. You are not loged in, visit <a href="/login">Login Page</a>
+	</div>
+</body>
+</html>
