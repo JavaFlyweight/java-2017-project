@@ -1,1 +1,1 @@
-web: java -war budget-webapp/target/webapp-0.0.1-SNAPSHOT.war
+web: java -war budget-webapp/target/budget-webapp-0.0.1-SNAPSHOT.war
