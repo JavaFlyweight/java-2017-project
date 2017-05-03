@@ -9,9 +9,7 @@ import com.example.java.domain.model.Income;
 
 public interface BudgetService {
 
-    public Budget getOneBudgetEntityToEdit(UUID budgetId);
-    
-    public Budget getOneBudgetEntityToView(UUID budgetId);
+    public Budget getOneById(UUID budgetId);
 
     public Budget createBudgetEntity(Budget dataToCreateBudget);
     

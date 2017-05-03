@@ -8,18 +8,14 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
-import com.example.java.repository.configuration.MongoConfiguration;
 import com.example.java.repository.queries.BudgetQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CutomBudgetRepositoryImpl implements MongoConfiguration, CustomBudgetRepository {
+public class BudgetRepositoryImpl implements  BudgetRepositoryCustom {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
-
-	@Override
-	public void setMongoTemplate(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
-	}
 
 	@Override
 	public Budget findOneById(UUID budgetId) {
@@ -27,7 +23,7 @@ public class CutomBudgetRepositoryImpl implements MongoConfiguration, CustomBudg
 	}
 
 	@Override
-	public List<Budget> findAllByIdAndPermissions(UUID userId, PermissionType permission) {
-		return mongoTemplate.find(BudgetQuery.queryFindAllByUserIdAndPermissions(userId, permission), Budget.class);
+	public List<Budget> findAllByUserLoginAndPermission(String userLogin, PermissionType permission) {
+		return mongoTemplate.find(BudgetQuery.queryFindAllByUserLoginAndPermissions(userLogin, permission), Budget.class);
 	}
 }

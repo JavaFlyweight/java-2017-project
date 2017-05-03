@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.java.application.services.BudgetService;
+import com.example.java.commons.exception.BudgetNotFoundException;
 import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
 import com.example.java.repository.queries.BudgetQuery;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @Controller
@@ -27,16 +29,10 @@ public class BudgetController {
     @Autowired
     private BudgetService budgetService;
 
-    @RequestMapping(value = "/getToEdit", method = RequestMethod.GET)
-    public Budget getOneBudgetToEdit(UUID budgetId) {
+    @RequestMapping(value = "/getById", method = RequestMethod.GET)
+    public Budget getOneById(@RequestParam UUID budgetId) {
         LOGGER.info("Start getOneBudget with budgetId {}", new Object[]{budgetId});
-        return budgetService.getOneBudgetEntityToEdit(budgetId);
-    }
-
-    @RequestMapping(value = "/getToView", method = RequestMethod.GET)
-    public Budget getOneBudgetToView(UUID budgetId) {
-        LOGGER.info("Start getOneBudget with budgetId {}", new Object[]{budgetId});
-        return budgetService.getOneBudgetEntityToEdit(budgetId);
+        return budgetService.getOneById(budgetId);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -45,15 +41,18 @@ public class BudgetController {
         return budgetService.createBudgetEntity(dataToCreateBudget);
     }
 
-//    @RequestMapping(value = "/getAllMe", method = RequestMethod.GET)
-//    public List<Budget> getAllByUserIdAndOwner() {
-//        LOGGER.debug("Start getAllByUserIdAndOwner ");
-//        return budgetService.getAllByUserIdAndOwner();
-//    }
-//
-//    @RequestMapping(value = "/getShared", method = RequestMethod.GET)
-//    public List<Budget> getSharedBudgets() {
-//        LOGGER.debug("Start getSharedBudgets ");
-//        return budgetService.getSharedBudgets();
-//    }
+    @RequestMapping(value = "/getMy", method = RequestMethod.GET)
+    public Budget getByUserIdAndOwner() {
+        LOGGER.info("Start getAllByUserIdAndOwner ");
+         if (budgetService.getAllByUserIdAndOwner().isEmpty()){
+            throw new BudgetNotFoundException();
+        }
+        return budgetService.getAllByUserIdAndOwner().get(0);
+    }
+
+    @RequestMapping(value = "/getShared", method = RequestMethod.GET)
+    public List<Budget> getSharedBudgets() {
+        LOGGER.info("Start getSharedBudgets ");
+        return budgetService.getSharedBudgets();
+    }
 }

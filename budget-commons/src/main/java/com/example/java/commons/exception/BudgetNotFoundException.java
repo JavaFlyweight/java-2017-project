@@ -16,4 +16,9 @@ public class BudgetNotFoundException extends RuntimeException {
         super("Could not find budget '" + budgetId + "'.");
         LOGGER.error("Could not find budget '" + budgetId + "'.");
     }
+
+    public BudgetNotFoundException() {
+        super("Could not find budget.");
+        LOGGER.error("Could not find budget.");
+    }
 }
