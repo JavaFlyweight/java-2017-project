@@ -43,4 +43,14 @@ public class Budget {
 	@Getter
 	@Setter
 	private Date dateTo;
+        
+        public Budget(){
+        }
+        
+        public Budget(double balance,double plannedAmount, Date dateFrom, Date dateTo){
+            this.balance=balance;
+            this.plannedAmount=plannedAmount;
+            this.dateFrom=dateFrom;
+            this.dateTo=dateTo;
+        }
 }

@@ -27,7 +27,7 @@ public class CutomBudgetRepositoryImpl implements MongoConfiguration, CustomBudg
 	}
 
 	@Override
-	public List<Budget> findOneByIdAndPermissions(UUID userId, PermissionType permission) {
+	public List<Budget> findAllByIdAndPermissions(UUID userId, PermissionType permission) {
 		return mongoTemplate.find(BudgetQuery.queryFindAllByUserIdAndPermissions(userId, permission), Budget.class);
 	}
 }

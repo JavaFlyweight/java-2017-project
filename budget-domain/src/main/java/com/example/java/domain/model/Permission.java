@@ -4,12 +4,14 @@ import com.example.java.commons.enums.PermissionType;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Permission {
 
-	private long userId;
+	private String userName;
 
-	private PermissionType permissionTtype;
+	private PermissionType permissionType;
 }

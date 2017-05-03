@@ -10,5 +10,5 @@ public interface CustomBudgetRepository {
 
 	public Budget findOneById(UUID budgetId);
 
-	public List<Budget> findOneByIdAndPermissions(UUID userId, PermissionType permission);		
+	public List<Budget> findAllByIdAndPermissions(UUID userId, PermissionType permission);		
 }
