@@ -33,8 +33,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget getOneBudgetEntityToEdit(UUID budgetId) {
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
+        String login = userService.getLoggedUserLogin();
         Budget budgetToReturn = budgetRepository.findOneById(budgetId);
 
         if (!checkPermissionForBudgetOwnerAndEdit(budgetToReturn, login)) {
@@ -45,41 +44,39 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget getOneBudgetEntityToView(UUID budgetId) {
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
+        String userLogin = userService.getLoggedUserLogin();
         Budget budgetToReturn = budgetRepository.findOneById(budgetId);
 
-        if (checkPermissionForBudgetViewRoles(budgetToReturn, login)) {
+        if (checkPermissionForBudgetViewRoles(budgetToReturn, userLogin)) {
             throw new BudgetForbiddenAccessException(budgetId);
         }
         return budgetToReturn;
     }
-    
-        @Override
+
+    @Override
     public Budget createBudgetEntity(Budget dataToCreateBudget) {
-        Budget budgetToSave=new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(),dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
+        Budget budgetToSave = new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
         Set<Permission> permissions = new HashSet<>();
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
-        permissions.add(new Permission(login, PermissionType.OWNER));
+        String userLogin = userService.getLoggedUserLogin();
+        permissions.add(new Permission(userLogin, PermissionType.OWNER));
+        budgetToSave.setPermissions(permissions);
         return budgetRepository.save(budgetToSave);
     }
 
     @Override
-    public Budget saveBudgetEntity(Budget budget) {
-        return budgetRepository.save(budget);
+    public List<Budget> getAllByUserIdAndOwner() {
+        String userLogin = userService.getLoggedUserLogin();
+        //TODO
+        UUID dUuid = new UUID(0, 0);
+        return budgetRepository.findAllByIdAndPermissions(dUuid, PermissionType.OWNER);
     }
 
     @Override
-    public List<Budget> getAllByUserIdAndOwner(UUID userID) {
-        return budgetRepository.findAllByIdAndPermissions(userID, PermissionType.OWNER);
-    }
-
-    @Override
-    public List<Budget> getSharedBudgets(UUID userID) {
+    public List<Budget> getSharedBudgets() {
+        String login = userService.getLoggedUserLogin();
         List<Budget> result = new ArrayList<>();
-        result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.EDIT));
-        result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.VIEW));
+        //result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.EDIT));
+        //result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.VIEW));
 
         return result;
     }
@@ -123,7 +120,7 @@ public class BudgetServiceImpl implements BudgetService {
     private boolean checkPermissionForBudgetOnlyOwner(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();
         for (Permission permission : permissions) {
-            if (PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) {
+            if (PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail())) {
                 return true;
             }
         }
@@ -133,7 +130,8 @@ public class BudgetServiceImpl implements BudgetService {
     private boolean checkPermissionForBudgetOwnerAndEdit(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();
         for (Permission permission : permissions) {
-            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserName()))) {
+            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail()))
+                    || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail()))) {
                 return true;
             }
         }
@@ -143,7 +141,8 @@ public class BudgetServiceImpl implements BudgetService {
     private boolean checkPermissionForBudgetViewRoles(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();
         for (Permission permission : permissions) {
-            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.VIEW.equals(permission.getPermissionType()) && userName.equals(permission.getUserName()))) {
+            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail())) || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail()))
+                    || (PermissionType.VIEW.equals(permission.getPermissionType()) && userName.equals(permission.getUserEmail()))) {
                 return true;
             }
         }

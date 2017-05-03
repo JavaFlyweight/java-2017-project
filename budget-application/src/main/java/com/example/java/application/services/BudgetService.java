@@ -15,13 +15,10 @@ public interface BudgetService {
 
     public Budget createBudgetEntity(Budget dataToCreateBudget);
     
-    public Budget saveBudgetEntity(Budget budget);
+    public List<Budget> getAllByUserIdAndOwner();
 
 
-    public List<Budget> getAllByUserIdAndOwner(UUID userID);
-
-
-    public List<Budget> getSharedBudgets(UUID userID);
+    public List<Budget> getSharedBudgets();
 
 
     public Budget addNewIncome(UUID budgetId, Income income);

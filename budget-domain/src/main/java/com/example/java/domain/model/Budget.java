@@ -9,7 +9,9 @@ import org.springframework.data.annotation.Id;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "Budget")
 public class Budget {
 
 	@Id
@@ -45,6 +47,7 @@ public class Budget {
 	private Date dateTo;
         
         public Budget(){
+            this.id = UUID.randomUUID();
         }
         
         public Budget(double balance,double plannedAmount, Date dateFrom, Date dateTo){
@@ -52,5 +55,6 @@ public class Budget {
             this.plannedAmount=plannedAmount;
             this.dateFrom=dateFrom;
             this.dateTo=dateTo;
+            this.id = UUID.randomUUID();
         }
 }

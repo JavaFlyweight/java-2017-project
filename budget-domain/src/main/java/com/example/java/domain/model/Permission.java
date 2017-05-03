@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Permission {
 
-	private String userName;
+	private String userEmail;
 
 	private PermissionType permissionType;
 }
