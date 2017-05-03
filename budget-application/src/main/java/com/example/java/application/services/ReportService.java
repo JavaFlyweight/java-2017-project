@@ -1,15 +1,13 @@
 package com.example.java.application.services;
 
-import java.util.List;
+import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
-
-import org.springframework.data.util.Pair;
 
 import com.example.java.commons.enums.ExpenseType;
 
-
 public interface ReportService {
 
-	public List<Pair<ExpenseType, Double>> getAllSumsExpensesPerType(UUID budgetId);
-	
+	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo);
+
 }
