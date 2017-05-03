@@ -19,135 +19,108 @@ import com.example.java.repository.BudgetRepository;
 import java.util.HashSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static com.example.java.application.services.UtilsService.checkPermissionForBudget;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BudgetServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BudgetServiceImpl.class);
 
-    @Autowired
-    private BudgetRepository budgetRepository;
+	@Autowired
+	private BudgetRepository budgetRepository;
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Override
-    public Budget getOneBudgetEntityToEdit(UUID budgetId) {
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
-        Budget budgetToReturn = budgetRepository.findOneById(budgetId);
+	@Override
+	public Budget getOneBudgetEntityToEdit(UUID budgetId) {
+		String login = userService.getLoggedUserName();
+		LOGGER.debug("Log user is  {0}", new Object[] { login });
+		Budget budgetToReturn = budgetRepository.findOneById(budgetId);
 
-        if (!checkPermissionForBudgetOwnerAndEdit(budgetToReturn, login)) {
-            throw new BudgetForbiddenAccessException(budgetId);
-        }
-        return budgetToReturn;
-    }
+		if (!checkPermissionForBudget(budgetToReturn, login, PermissionType.OWNER, PermissionType.EDIT)) {
+			throw new BudgetForbiddenAccessException(budgetId);
+		}
+		return budgetToReturn;
+	}
 
-    @Override
-    public Budget getOneBudgetEntityToView(UUID budgetId) {
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
-        Budget budgetToReturn = budgetRepository.findOneById(budgetId);
+	@Override
+	public Budget getOneBudgetEntityToView(UUID budgetId) {
+		String login = userService.getLoggedUserName();
+		LOGGER.debug("Log user is  {0}", new Object[] { login });
+		Budget budgetToReturn = budgetRepository.findOneById(budgetId);
 
-        if (checkPermissionForBudgetViewRoles(budgetToReturn, login)) {
-            throw new BudgetForbiddenAccessException(budgetId);
-        }
-        return budgetToReturn;
-    }
-    
-        @Override
-    public Budget createBudgetEntity(Budget dataToCreateBudget) {
-        Budget budgetToSave=new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(),dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
-        Set<Permission> permissions = new HashSet<>();
-        String login = userService.getLoggedUserName();
-        LOGGER.debug("Log user is  {0}", new Object[]{login});
-        permissions.add(new Permission(login, PermissionType.OWNER));
-        return budgetRepository.save(budgetToSave);
-    }
+		if (checkPermissionForBudget(budgetToReturn, login, PermissionType.VIEW)) {
+			throw new BudgetForbiddenAccessException(budgetId);
+		}
+		return budgetToReturn;
+	}
 
-    @Override
-    public Budget saveBudgetEntity(Budget budget) {
-        return budgetRepository.save(budget);
-    }
+	@Override
+	public Budget createBudgetEntity(Budget dataToCreateBudget) {
+		Budget budgetToSave = new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(),
+				dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
+		Set<Permission> permissions = new HashSet<>();
+		String login = userService.getLoggedUserName();
+		LOGGER.debug("Log user is  {0}", new Object[] { login });
+		permissions.add(new Permission(login, PermissionType.OWNER));
+		return budgetRepository.save(budgetToSave);
+	}
 
-    @Override
-    public List<Budget> getAllByUserIdAndOwner(UUID userID) {
-        return budgetRepository.findAllByIdAndPermissions(userID, PermissionType.OWNER);
-    }
+	@Override
+	public Budget saveBudgetEntity(Budget budget) {
+		return budgetRepository.save(budget);
+	}
 
-    @Override
-    public List<Budget> getSharedBudgets(UUID userID) {
-        List<Budget> result = new ArrayList<>();
-        result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.EDIT));
-        result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.VIEW));
+	@Override
+	public List<Budget> getAllByUserIdAndOwner(UUID userID) {
+		return budgetRepository.findAllByIdAndPermissions(userID, PermissionType.OWNER);
+	}
 
-        return result;
-    }
+	@Override
+	public List<Budget> getSharedBudgets(UUID userID) {
+		List<Budget> result = new ArrayList<>();
+		result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.EDIT));
+		result.addAll(budgetRepository.findAllByIdAndPermissions(userID, PermissionType.VIEW));
 
-    @Override
-    public Budget addNewIncome(UUID budgetId, Income income) {
-        Budget editedBudget = getOneBudgetEntityToEdit(budgetId);
+		return result;
+	}
 
-        if (editedBudget == null) {
-            throw new BudgetNotFoundException(budgetId);
-        }
+	@Override
+	public Budget addNewIncome(UUID budgetId, Income income) {
+		Budget editedBudget = getOneBudgetEntityToEdit(budgetId);
 
-        Set<Income> incomes = editedBudget.getIncomes();
-        incomes.add(income);
+		if (editedBudget == null) {
+			throw new BudgetNotFoundException(budgetId);
+		}
 
-        editedBudget.setIncomes(incomes);
+		Set<Income> incomes = editedBudget.getIncomes();
+		incomes.add(income);
 
-        budgetRepository.save(editedBudget);
+		editedBudget.setIncomes(incomes);
 
-        return editedBudget;
-    }
+		budgetRepository.save(editedBudget);
 
-    @Override
-    public Budget addNewExpense(UUID budgetId, Expense expense) {
-        Budget editedBudget = getOneBudgetEntityToEdit(budgetId);
+		return editedBudget;
+	}
 
-        if (editedBudget == null) {
-            throw new BudgetNotFoundException(budgetId);
-        }
+	@Override
+	public Budget addNewExpense(UUID budgetId, Expense expense) {
+		Budget editedBudget = getOneBudgetEntityToEdit(budgetId);
 
-        Set<Expense> expenses = editedBudget.getExpenses();
-        expenses.add(expense);
+		if (editedBudget == null) {
+			throw new BudgetNotFoundException(budgetId);
+		}
 
-        editedBudget.setExpenses(expenses);
+		Set<Expense> expenses = editedBudget.getExpenses();
+		expenses.add(expense);
 
-        budgetRepository.save(editedBudget);
+		editedBudget.setExpenses(expenses);
 
-        return editedBudget;
-    }
+		budgetRepository.save(editedBudget);
 
-    private boolean checkPermissionForBudgetOnlyOwner(Budget budgetToCheck, String userName) {
-        Set<Permission> permissions = budgetToCheck.getPermissions();
-        for (Permission permission : permissions) {
-            if (PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+		return editedBudget;
+	}
 
-    private boolean checkPermissionForBudgetOwnerAndEdit(Budget budgetToCheck, String userName) {
-        Set<Permission> permissions = budgetToCheck.getPermissions();
-        for (Permission permission : permissions) {
-            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserName()))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean checkPermissionForBudgetViewRoles(Budget budgetToCheck, String userName) {
-        Set<Permission> permissions = budgetToCheck.getPermissions();
-        for (Permission permission : permissions) {
-            if ((PermissionType.OWNER.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.EDIT.equals(permission.getPermissionType()) && userName.equals(permission.getUserName())) || (PermissionType.VIEW.equals(permission.getPermissionType()) && userName.equals(permission.getUserName()))) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 }
