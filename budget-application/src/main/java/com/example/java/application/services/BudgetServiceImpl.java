@@ -45,11 +45,11 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget createBudgetEntity(Budget dataToCreateBudget) {
-        List<Budget> ownerBudget=getAllByUserIdAndOwner();
-        if (!ownerBudget.isEmpty()){
+        List<Budget> ownerBudget = getAllByUserLoginAndOwner();
+        if (!ownerBudget.isEmpty()) {
             throw new UserAlreadyHasBudget(ownerBudget.get(0).getId());
         }
-        
+
         Budget budgetToSave = new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
@@ -59,9 +59,17 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public List<Budget> getAllByUserIdAndOwner() {
+    public Budget getOneByUserLoginAndOwner() {
+        List<Budget> allBudgetByUserLoginAndOwner=getAllByUserLoginAndOwner();
+        if (allBudgetByUserLoginAndOwner.isEmpty()) {
+            throw new BudgetNotFoundException();
+        }
+        return allBudgetByUserLoginAndOwner.get(0);
+    }
+
+    private List<Budget> getAllByUserLoginAndOwner() {
         String userLogin = userService.getLoggedUserLogin();
-        List<Budget> foundBudgets=budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.OWNER);
+        List<Budget> foundBudgets = budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.OWNER);
         return foundBudgets;
     }
 

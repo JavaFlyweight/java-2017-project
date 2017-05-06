@@ -13,7 +13,7 @@ public interface BudgetService {
 
     public Budget createBudgetEntity(Budget dataToCreateBudget);
     
-    public List<Budget> getAllByUserIdAndOwner();
+    public Budget getOneByUserLoginAndOwner();
 
 
     public List<Budget> getSharedBudgets();
