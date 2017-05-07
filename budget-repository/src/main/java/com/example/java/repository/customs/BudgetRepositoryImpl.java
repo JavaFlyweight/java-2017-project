@@ -9,21 +9,21 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 import com.example.java.repository.queries.BudgetQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class BudgetRepositoryImpl implements  BudgetRepositoryCustom {
+public class BudgetRepositoryImpl implements BudgetRepositoryCustom {
 
-	@Autowired
-	MongoTemplate mongoTemplate;
+    @Autowired
+    MongoTemplate mongoTemplate;
 
-	@Override
-	public Budget findOneById(UUID budgetId) {
-		return mongoTemplate.findById(budgetId, Budget.class);
-	}
 
-	@Override
-	public List<Budget> findAllByUserLoginAndPermission(String userLogin, PermissionType permission) {
-		return mongoTemplate.find(BudgetQuery.queryFindAllByUserLoginAndPermissions(userLogin, permission), Budget.class);
-	}
+    @Override
+    public Budget findOneById(UUID budgetId) {
+        return mongoTemplate.findById(budgetId, Budget.class);
+    }
+
+
+    @Override
+    public List<Budget> findAllByUserLoginAndPermission(String userLogin, PermissionType permission) {
+        return mongoTemplate.find(BudgetQuery.queryFindAllByUserLoginAndPermissions(userLogin, permission), Budget.class);
+    }
 }

@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.java.commons.enums.PermissionType;
-import com.example.java.commons.exception.BudgetNotFoundException;
-import com.example.java.commons.exception.BudgetForbiddenAccessException;
-import com.example.java.commons.exception.UserAlreadyHasBudget;
+import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
+import com.example.java.commons.exceptions.BudgetNotFoundException;
+import com.example.java.commons.exceptions.UserAlreadyHasBudget;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.Income;
