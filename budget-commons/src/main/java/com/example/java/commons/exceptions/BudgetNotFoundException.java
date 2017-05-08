@@ -1,4 +1,4 @@
-package com.example.java.commons.exception;
+package com.example.java.commons.exceptions;
 
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -15,5 +15,10 @@ public class BudgetNotFoundException extends RuntimeException {
     public BudgetNotFoundException(UUID budgetId) {
         super("Could not find budget '" + budgetId + "'.");
         LOGGER.error("Could not find budget '" + budgetId + "'.");
+    }
+
+    public BudgetNotFoundException() {
+        super("Could not find budget.");
+        LOGGER.error("Could not find budget.");
     }
 }

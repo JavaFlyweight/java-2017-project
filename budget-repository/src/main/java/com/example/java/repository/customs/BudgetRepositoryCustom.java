@@ -6,9 +6,9 @@ import java.util.UUID;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 
-public interface CustomBudgetRepository {
+public interface BudgetRepositoryCustom {
 
 	public Budget findOneById(UUID budgetId);
 
-	public List<Budget> findAllByIdAndPermissions(UUID userId, PermissionType permission);		
+	public List<Budget> findAllByUserLoginAndPermission(String userLogin, PermissionType permission);		
 }

@@ -13,7 +13,7 @@ public class UtilsService {
 			PermissionType... permissionTypes) {
 		Set<Permission> permissions = budgetToCheck.getPermissions();
 
-		PermissionType userPermission = permissions.stream().filter(p -> p.getUserName().equals(userName)).findAny()
+		PermissionType userPermission = permissions.stream().filter(p -> p.getUserLogin().equals(userName)).findAny()
 				.get().getPermissionType();
 
 		if (Arrays.asList(permissionTypes).contains(userPermission)) {

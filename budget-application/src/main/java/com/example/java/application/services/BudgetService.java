@@ -9,20 +9,16 @@ import com.example.java.domain.model.Income;
 
 public interface BudgetService {
 
-    public Budget getOneBudgetEntityToEdit(UUID budgetId);
-    
-    public Budget getOneBudgetEntityToView(UUID budgetId);
+    public Budget getOneById(UUID budgetId);
 
     public Budget createBudgetEntity(Budget dataToCreateBudget);
     
-    public Budget saveBudgetEntity(Budget budget);
+    public Budget getOneByUserLoginAndOwner();
 
 
-    public List<Budget> getAllByUserIdAndOwner(UUID userID);
+    public List<Budget> getSharedBudgets();
 
-
-    public List<Budget> getSharedBudgets(UUID userID);
-
+    public Budget editBudgetEntity(Budget dataToEditBudget);
 
     public Budget addNewIncome(UUID budgetId, Income income);
 

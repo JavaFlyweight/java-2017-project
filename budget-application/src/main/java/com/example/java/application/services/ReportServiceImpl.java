@@ -12,13 +12,12 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
-import com.example.java.commons.exception.BudgetForbiddenAccessException;
+import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.Income;
 import com.example.java.repository.BudgetRepository;
@@ -39,9 +38,9 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		Map<ExpenseType, Double> allSumsExpensesPerType = new HashMap<ExpenseType, Double>();
-		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserName() });
+		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserLogin() });
 
-		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserName(),
+		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
 				PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
@@ -62,9 +61,9 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<IncomeType, Double> getAllSumsIncomesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		Map<IncomeType, Double> allSumsIncomesPerType = new HashMap<IncomeType, Double>();
-		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserName() });
+		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserLogin() });
 
-		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserName(),
+		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
 				PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {

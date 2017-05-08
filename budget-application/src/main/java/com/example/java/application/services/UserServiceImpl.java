@@ -1,11 +1,11 @@
 package com.example.java.application.services;
 
-import com.example.java.commons.exception.LoggedUserNotFoundException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.java.commons.exceptions.LoggedUserNotFoundException;
 import com.example.java.domain.model.User;
 import com.example.java.repository.UserRepository;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -75,18 +75,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getLoggedUserName() {
+    public String getLoggedUserLogin() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String user;
-        if (principal instanceof User) {
-            org.springframework.security.core.userdetails.User loggedUser = (org.springframework.security.core.userdetails.User) principal;
-            user =loggedUser.getUsername();
-        } else {
-            user =principal.toString();
+        String userLogin = null;
+        if (principal instanceof com.example.java.domain.model.SecurityUserDetails) {
+            com.example.java.domain.model.SecurityUserDetails loggedUser = (com.example.java.domain.model.SecurityUserDetails) principal;
+            userLogin = loggedUser.getUsername();
         }
-        if(user!=null){
-            throw  new LoggedUserNotFoundException();
+        LOGGER.info("Logged user is  {}", new Object[]{userLogin});
+        if (userLogin == null) {
+            throw new LoggedUserNotFoundException();
         }
-        return user;
+        return userLogin;
     }
 }

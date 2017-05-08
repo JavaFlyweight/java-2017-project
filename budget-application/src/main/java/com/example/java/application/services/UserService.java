@@ -15,5 +15,5 @@ public interface UserService {
 
 	public boolean isUserExist(String email);
         
-        public String getLoggedUserName();
+        public String getLoggedUserLogin();
 }
