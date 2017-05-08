@@ -18,6 +18,7 @@ public interface BudgetService {
 
     public List<Budget> getSharedBudgets();
 
+    public Budget editBudgetEntity(Budget dataToEditBudget);
 
     public Budget addNewIncome(UUID budgetId, Income income);
 

@@ -52,4 +52,10 @@ public class BudgetController {
         LOGGER.info("Start getSharedBudgets ");
         return budgetService.getSharedBudgets();
     }
+    
+        @RequestMapping(value = "/edit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Budget editBudgetEntity(@RequestBody Budget dataToEditBudget) {
+        LOGGER.info("Start createBudgetEntity {} {} {} {} ", new Object[]{ dataToEditBudget.getId(), dataToEditBudget.getPlannedAmount(), dataToEditBudget.getDateFrom(), dataToEditBudget.getDateTo()});
+        return budgetService.editBudgetEntity(dataToEditBudget);
+    }
 }

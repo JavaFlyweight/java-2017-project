@@ -45,11 +45,6 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget createBudgetEntity(Budget dataToCreateBudget) {
-        List<Budget> ownerBudget = getAllByUserLoginAndOwner();
-        if (!ownerBudget.isEmpty()) {
-            throw new UserAlreadyHasBudget(ownerBudget.get(0).getId());
-        }
-
         Budget budgetToSave = new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
@@ -60,7 +55,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget getOneByUserLoginAndOwner() {
-        List<Budget> allBudgetByUserLoginAndOwner=getAllByUserLoginAndOwner();
+        List<Budget> allBudgetByUserLoginAndOwner = getAllByUserLoginAndOwner();
         if (allBudgetByUserLoginAndOwner.isEmpty()) {
             throw new BudgetNotFoundException();
         }
@@ -81,6 +76,26 @@ public class BudgetServiceImpl implements BudgetService {
         result.addAll(budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.VIEW));
 
         return result;
+    }
+
+    @Override
+    public Budget editBudgetEntity(Budget dataToEditBudget) {
+        //TODO check id is not epty
+        Budget budgetToEdit = getOneByIdEdit(dataToEditBudget.getId());
+        budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
+        budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
+        budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
+        return budgetRepository.save(budgetToEdit);
+    }
+
+    //TODO metoda pomocnicza - do usinięcia i zrefaktowryzowania po marge ze zmianami Bartka (przejście na UtilsService)
+    private Budget getOneByIdEdit(UUID budgetId) {
+        String userLogin = userService.getLoggedUserLogin();
+        Budget budgetToReturn = budgetRepository.findOneById(budgetId);
+        if (!checkPermissionForBudgetOwnerAndEdit(budgetToReturn, userLogin)) {
+            throw new BudgetForbiddenAccessException(budgetId);
+        }
+        return budgetToReturn;
     }
 
     @Override
@@ -118,6 +133,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         return editedBudget;
     }
+//TO DELETE
 
     private boolean checkPermissionForBudgetOnlyOwner(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();
@@ -128,6 +144,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
         return false;
     }
+//TO DELETE
 
     private boolean checkPermissionForBudgetOwnerAndEdit(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();
@@ -139,6 +156,7 @@ public class BudgetServiceImpl implements BudgetService {
         }
         return false;
     }
+//TO DELETE
 
     private boolean checkPermissionForBudgetViewRoles(Budget budgetToCheck, String userName) {
         Set<Permission> permissions = budgetToCheck.getPermissions();

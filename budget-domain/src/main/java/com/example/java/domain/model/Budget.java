@@ -16,6 +16,7 @@ public class Budget {
 
 	@Id
 	@Getter
+        @Setter
 	private UUID id;
 
 	@Getter
