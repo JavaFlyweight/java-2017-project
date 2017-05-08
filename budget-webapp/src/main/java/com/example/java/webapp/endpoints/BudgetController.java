@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @Controller
@@ -26,19 +27,19 @@ public class BudgetController {
     private BudgetService budgetService;
 
     @RequestMapping(value = "/getToEdit", method = RequestMethod.GET)
-    public Budget getOneBudgetToEdit(UUID budgetId) {
+    public Budget getOneBudgetToEdit(@RequestParam UUID budgetId) {
         LOGGER.debug("Start getOneBudget with budgetId {0}", new Object[]{budgetId});
         return budgetService.getOneBudgetEntityToEdit(budgetId);
     }
 
     @RequestMapping(value = "/getToView", method = RequestMethod.GET)
-    public Budget getOneBudgetToView(UUID budgetId) {
+    public Budget getOneBudgetToView(@RequestParam UUID budgetId) {
         LOGGER.debug("Start getOneBudget with budgetId {0}", new Object[]{budgetId});
         return budgetService.getOneBudgetEntityToEdit(budgetId);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public Budget createBudgetEntity(Budget dataToCreateBudget) {
+    public Budget createBudgetEntity(@RequestParam Budget dataToCreateBudget) {
         LOGGER.debug("Start createBudgetEntity");
         return budgetService.createBudgetEntity(dataToCreateBudget);
     }
