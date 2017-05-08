@@ -1,4 +1,4 @@
-package com.example.java.commons.exception;
+package com.example.java.commons.exceptions;
 
 import java.util.UUID;
 import org.slf4j.Logger;

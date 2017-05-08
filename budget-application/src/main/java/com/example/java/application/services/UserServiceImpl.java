@@ -1,11 +1,11 @@
 package com.example.java.application.services;
 
-import com.example.java.commons.exception.LoggedUserNotFoundException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.java.commons.exceptions.LoggedUserNotFoundException;
 import com.example.java.domain.model.User;
 import com.example.java.repository.UserRepository;
 import org.slf4j.Logger;
