@@ -1,8 +1,11 @@
 package com.example.java.application.services.test;
 
+import com.example.java.commons.enums.ExpenseType;
+import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
+import com.example.java.domain.model.Income;
 import com.example.java.domain.model.Permission;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,8 +28,11 @@ public class BudgetTestUtils {
         permissions.add(new Permission(userLogin, permissionType));
         createdBudget.setPermissions(permissions);
         Set<Expense> expenses = new HashSet<>();
-        expenses.add(new Expense("Mieszkanie", 30.9, null, null));
+        expenses.add(new Expense("Mieszkanie", 30.9, null, ExpenseType.HOUSEHOLD));
         createdBudget.setExpenses(expenses);
+        Set<Income> incomes = new HashSet<>();
+        incomes.add(new Income("Premia", 1000.99, null, IncomeType.PREMIUM));
+        createdBudget.setIncomes(incomes);
         return createdBudget;
     }
 
