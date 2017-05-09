@@ -13,20 +13,23 @@ public class UtilsService {
 			PermissionType... permissionTypes) {
 		Set<Permission> permissions = budgetToCheck.getPermissions();
 
-//		PermissionType userPermission = permissions.stream().filter(p -> p.getUserLogin().equals(userName)).findAny()
-//				.get().getPermissionType();
-		
-		Permission permission = permissions.stream().filter(p -> p.getUserLogin().equals(userName)).findAny().get();
+		// PermissionType userPermission = permissions.stream().filter(p ->
+		// p.getUserLogin().equals(userName)).findAny()
+		// .get().getPermissionType();
 
-		if(permission == null){
+		Permission permission = permissions.stream().filter(p -> p.getUserLogin().equals(userName)).findAny()
+				.orElse(null);
+
+		if (permission == null) {
 			return false;
-		}else{
-			PermissionType userPermission = permission.getPermissionType();
-		
-		if (Arrays.asList(permissionTypes).contains(userPermission)) {
-			return true;
 		} else {
-			return false;
-		}}
+			PermissionType userPermission = permission.getPermissionType();
+
+			if (Arrays.asList(permissionTypes).contains(userPermission)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	}
 }
