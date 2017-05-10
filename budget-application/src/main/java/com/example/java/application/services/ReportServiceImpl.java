@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
+import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.Income;
 import com.example.java.repository.BudgetRepository;
@@ -37,23 +39,25 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
-		Map<ExpenseType, Double> allSumsExpensesPerType = new HashMap<ExpenseType, Double>();
 		LOGGER.debug("Log user is  {}", new Object[] { userService.getLoggedUserLogin() });
-
-		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
-				PermissionType.VIEW)) {
+		Map<ExpenseType, Double> allSumsExpensesPerType = new LinkedHashMap<ExpenseType, Double>();
+		Budget budget = budgetRepository.findOneById(budgetId);
+		if (!checkPermissionForBudget(budget, userService.getLoggedUserLogin(), PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
-			Set<Expense> expenses = budgetRepository.findOneById(budgetId).getExpenses();
+			Set<Expense> expenses = budget.getExpenses();
 			List<ExpenseType> allExpenseTypes = new ArrayList<ExpenseType>(Arrays.asList(ExpenseType.values()));
 
 			for (ExpenseType expenseType : allExpenseTypes) {
 				Double sumExpensesOfType = expenses.stream().filter(type -> type.getExpenseType().equals(expenseType))
+						.filter(nullDate -> nullDate.getDateTime() != null)
 						.filter(date -> date.getDateTime().after(dateFrom) && date.getDateTime().before(dateTo))
 						.mapToDouble(item -> item.getAmount()).sum();
+				
 
 				allSumsExpensesPerType.put(expenseType, sumExpensesOfType);
 			}
+
 			return allSumsExpensesPerType;
 		}
 	}

@@ -28,10 +28,10 @@ public class BudgetTestUtils {
         permissions.add(new Permission(userLogin, permissionType));
         createdBudget.setPermissions(permissions);
         Set<Expense> expenses = new HashSet<>();
-        expenses.add(new Expense("Mieszkanie", 30.9, null, ExpenseType.HOUSEHOLD));
+        expenses.add(new Expense("Mieszkanie", 30.9, null, ExpenseType.HOUSEHOLD, new Date()));
         createdBudget.setExpenses(expenses);
         Set<Income> incomes = new HashSet<>();
-        incomes.add(new Income("Premia", 1000.99, null, IncomeType.PREMIUM));
+        incomes.add(new Income("Premia", 1000.99, null, IncomeType.PREMIUM, new Date()));
         createdBudget.setIncomes(incomes);
         return createdBudget;
     }

@@ -29,48 +29,45 @@ import static com.example.java.application.services.test.ReportTestUtils.createR
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReportServiceTest {
-	
+
 	@Mock
-    private BudgetRepository budgetRepository;
+	private BudgetRepository budgetRepository;
 
-    @Mock
-    private UserService userService;
-    
-    @InjectMocks
-    private final ReportService reportService = new ReportServiceImpl();
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceTest.class);
-    
-    private static final UUID BUDGET_ID = UUID.randomUUID();
-    private static final String USER_LOGIN = "abc@wp.pl";
-    private static final String USER_LOGIN2 = "xyz@wp.pl";
-    
-    @Test
-    public void shouldGetReportWithExpensesForOneBugdetById(){
-    	final Map<ExpenseType, Double> reportFromRepository = stubRepositoryToGetReportWithExpenses();
-    	final Map<ExpenseType, Double> returnedReport = reportService.getAllSumsExpensesPerType(BUDGET_ID, new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
-    	verify(userService, times(1)).getLoggedUserLogin();
-    	assertEquals("Returned report with expenses should be the same", reportFromRepository, returnedReport);
-    }
-    
-    @Test
-    public void shouldGetReportWithIncomesForOneBugdetById(){
-    	
-    }
-    
-    
-    
-    private Map<ExpenseType, Double> stubRepositoryToGetReportWithExpenses() {
-        final Map<ExpenseType, Double> reportFromRepository=createReportWithExpensesForBudget();
-        final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.VIEW);
-        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
-        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
-        return reportFromRepository;
-    }
+	@Mock
+	private UserService userService;
 
+	@InjectMocks
+	private final ReportService reportService = new ReportServiceImpl();
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReportServiceTest.class);
 
-    
+	private static final UUID BUDGET_ID = UUID.randomUUID();
+	private static final String USER_LOGIN = "abc@wp.pl";
+	private static final String USER_LOGIN2 = "xyz@wp.pl";
 
+	@Test
+	public void shouldGetReportWithExpensesForOneBugdetById() {
+		final Map<ExpenseType, Double> reportFromRepository = stubRepositoryToGetReportWithExpenses();
+		final Map<ExpenseType, Double> returnedReport = reportService.getAllSumsExpensesPerType(BUDGET_ID,
+				new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+
+		verify(userService, times(2)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+		assertEquals("Returned report with expenses should be the same", reportFromRepository, returnedReport);
+	}
+
+	@Test
+	public void shouldGetReportWithIncomesForOneBugdetById() {
+
+	}
+
+	private Map<ExpenseType, Double> stubRepositoryToGetReportWithExpenses() {
+		final Map<ExpenseType, Double> reportFromRepository = createReportWithExpensesForBudget();
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
+				PermissionType.VIEW);
+		when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		return reportFromRepository;
+	}
 
 }
