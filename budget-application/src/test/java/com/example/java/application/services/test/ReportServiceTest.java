@@ -24,6 +24,8 @@ import com.example.java.application.services.UserService;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
+import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
+import com.example.java.commons.exceptions.BudgetNotFoundException;
 import com.example.java.domain.model.Budget;
 import com.example.java.repository.BudgetRepository;
 
@@ -68,7 +70,77 @@ public class ReportServiceTest {
 		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
 		assertEquals("Returned report with incomes should be the same", reportFromRepository, returnedReport);
 	}
-
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetReportWithExpensesForOneBugdetByIdForNotLoggedUser_TheExceptionShouldBeThrown(){
+		final Map<ExpenseType, Double> reportFromRepository = stubRepositoryToGetReportWithExpensesForNotLoggedUser();
+		final Map<ExpenseType, Double> returnedReport = reportService.getAllSumsExpensesPerType(BUDGET_ID,
+				new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetReportWithExpensesForOneBugdetByIdForUserWithoutAccessView_TheExceptionShouldBeThrown(){
+		final Map<ExpenseType, Double> reportFromRepository = stubRepositoryToGetReportWithExpensesForUserWithoutAccessView();
+		final Map<ExpenseType, Double> returnedReport = reportService.getAllSumsExpensesPerType(BUDGET_ID,
+				new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetReportWithIncomesForOneBugdetByIdForNotLoggedUser_TheExceptionShouldBeThrown(){
+		final Map<IncomeType, Double> reportFromRepository = stubRepositoryToGetReportWithIncomesForNotLoggedUser();
+		final Map<IncomeType, Double> returnedReport = reportService.getAllSumsIncomesPerType(BUDGET_ID,
+				new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetReportWithIncomesForOneBugdetByIdForUserWithoutAccesView_TheExceptionShouldBeThrown(){
+		final Map<IncomeType, Double> reportFromRepository = stubRepositoryToGetReportWithIncomesForUserWithoutAccessView();
+		final Map<IncomeType, Double> returnedReport = reportService.getAllSumsIncomesPerType(BUDGET_ID,
+				new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	private Map<ExpenseType,Double> stubRepositoryToGetReportWithExpensesForUserWithoutAccessView(){
+		final Map<ExpenseType, Double> reportFromRepository = createReportWithExpensesForBudget();
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN2,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+		return reportFromRepository;
+	}
+	
+	private Map<IncomeType,Double> stubRepositoryToGetReportWithIncomesForUserWithoutAccessView(){
+		final Map<IncomeType, Double> reportFromRepository = createReportWithIncomesForBudget();
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN2,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+		return reportFromRepository;
+	}
+	
+	private Map<IncomeType,Double> stubRepositoryToGetReportWithIncomesForNotLoggedUser(){
+		final Map<IncomeType, Double> reportFromRepository = createReportWithIncomesForBudget();
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		return reportFromRepository;
+	}
+	
+	private Map<ExpenseType,Double> stubRepositoryToGetReportWithExpensesForNotLoggedUser(){
+		final Map<ExpenseType, Double> reportFromRepository = createReportWithExpensesForBudget();
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		return reportFromRepository;
+	}
+	
 	private Map<ExpenseType, Double> stubRepositoryToGetReportWithExpenses() {
 		final Map<ExpenseType, Double> reportFromRepository = createReportWithExpensesForBudget();
 		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
