@@ -38,7 +38,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		Map<ExpenseType, Double> allSumsExpensesPerType = new HashMap<ExpenseType, Double>();
-		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserLogin() });
+		LOGGER.debug("Log user is  {}", new Object[] { userService.getLoggedUserLogin() });
 
 		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
 				PermissionType.VIEW)) {
@@ -61,7 +61,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public Map<IncomeType, Double> getAllSumsIncomesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		Map<IncomeType, Double> allSumsIncomesPerType = new HashMap<IncomeType, Double>();
-		LOGGER.debug("Log user is  {0}", new Object[] { userService.getLoggedUserLogin() });
+		LOGGER.debug("Log user is  {}", new Object[] { userService.getLoggedUserLogin() });
 
 		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
 				PermissionType.VIEW)) {

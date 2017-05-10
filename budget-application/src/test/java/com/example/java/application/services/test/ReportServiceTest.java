@@ -1,7 +1,12 @@
 package com.example.java.application.services.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -15,9 +20,12 @@ import org.slf4j.LoggerFactory;
 import com.example.java.application.services.ReportService;
 import com.example.java.application.services.ReportServiceImpl;
 import com.example.java.application.services.UserService;
+import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 import com.example.java.repository.BudgetRepository;
+
+import static com.example.java.application.services.test.ReportTestUtils.createReportWithExpensesForBudget;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReportServiceTest {
@@ -39,7 +47,10 @@ public class ReportServiceTest {
     
     @Test
     public void shouldGetReportWithExpensesForOneBugdetById(){
-    	
+    	final Map<ExpenseType, Double> reportFromRepository = stubRepositoryToGetReportWithExpenses();
+    	final Map<ExpenseType, Double> returnedReport = reportService.getAllSumsExpensesPerType(BUDGET_ID, new Date(Long.MIN_VALUE), new Date(Long.MAX_VALUE));
+    	verify(userService, times(1)).getLoggedUserLogin();
+    	assertEquals("Returned report with expenses should be the same", reportFromRepository, returnedReport);
     }
     
     @Test
@@ -49,14 +60,16 @@ public class ReportServiceTest {
     
     
     
-    private Budget stubRepositoryToGetOneBudgetEntityByIdWithViewPermission(PermissionType permissionType) {
-        final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, permissionType);
-//        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
-//        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
-        return budgetFromRepository;
+    private Map<ExpenseType, Double> stubRepositoryToGetReportWithExpenses() {
+        final Map<ExpenseType, Double> reportFromRepository=createReportWithExpensesForBudget();
+        final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.VIEW);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+        return reportFromRepository;
     }
 
-    
+
+
     
 
 
