@@ -35,11 +35,10 @@ public class BudgetServiceImpl implements BudgetService {
     private UserService userService;
 
     @Override
-    public Budget getOneById(UUID budgetId) {
+    public Budget getOneById(UUID budgetId, PermissionType... permissionTypes) {
         String userLogin = userService.getLoggedUserLogin();
         Budget budgetToReturn = budgetRepository.findOneById(budgetId);
-
-        if (!checkPermissionForBudget(budgetToReturn, userLogin,PermissionType.VIEW)) {
+        if (!checkPermissionForBudget(budgetToReturn, userLogin, permissionTypes )) {
             throw new BudgetForbiddenAccessException(budgetId);
         }
         return budgetToReturn;
@@ -83,21 +82,11 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public Budget editBudgetEntity(Budget dataToEditBudget) {
         //TODO check id is not epty
-        Budget budgetToEdit = getOneByIdEdit(dataToEditBudget.getId());
+        Budget budgetToEdit = getOneById(dataToEditBudget.getId(), PermissionType.OWNER,PermissionType.EDIT);
         budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
         budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
         return budgetRepository.save(budgetToEdit);
-    }
-
-    //TODO metoda pomocnicza - do usinięcia i zrefaktowryzowania po marge ze zmianami Bartka (przejście na UtilsService)
-    private Budget getOneByIdEdit(UUID budgetId) {
-        String userLogin = userService.getLoggedUserLogin();
-        Budget budgetToReturn = budgetRepository.findOneById(budgetId);
-        if (!checkPermissionForBudget(budgetToReturn, userLogin,PermissionType.OWNER,PermissionType.EDIT)) {
-            throw new BudgetForbiddenAccessException(budgetId);
-        }
-        return budgetToReturn;
     }
 
     @Override

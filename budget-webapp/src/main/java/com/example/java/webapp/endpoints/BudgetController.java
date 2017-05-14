@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.java.application.services.BudgetService;
+import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
-
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @Controller
@@ -35,11 +37,12 @@ public class BudgetController {
     @RequestMapping(value = "/getById", method = RequestMethod.GET)
     public Budget getOneById(@RequestParam UUID budgetId) {
         LOGGER.info("Start getOneBudget with budgetId {}", new Object[] { budgetId });
-        return budgetService.getOneById(budgetId);
+        return budgetService.getOneById(budgetId, PermissionType.OWNER, PermissionType.EDIT, PermissionType.VIEW);
     }
 
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public Budget createBudgetEntity(@RequestBody Budget dataToCreateBudget) {
         LOGGER.info("Start createBudgetEntity {} {} {} {}",
                 new Object[] { dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo() });
