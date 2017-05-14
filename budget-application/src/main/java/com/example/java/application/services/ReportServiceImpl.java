@@ -39,10 +39,11 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
-		LOGGER.debug("Log user is  {}", new Object[] { userService.getLoggedUserLogin() });
+		String userLogin = userService.getLoggedUserLogin();
+		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
 		Map<ExpenseType, Double> allSumsExpensesPerType = new LinkedHashMap<ExpenseType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
-		if (!checkPermissionForBudget(budget, userService.getLoggedUserLogin(), PermissionType.VIEW)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Expense> expenses = budget.getExpenses();
@@ -64,18 +65,21 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public Map<IncomeType, Double> getAllSumsIncomesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
-		Map<IncomeType, Double> allSumsIncomesPerType = new HashMap<IncomeType, Double>();
-		LOGGER.debug("Log user is  {}", new Object[] { userService.getLoggedUserLogin() });
+		String userLogin = userService.getLoggedUserLogin();
+		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
+		Map<IncomeType, Double> allSumsIncomesPerType = new LinkedHashMap<IncomeType, Double>();
+		Budget budget = budgetRepository.findOneById(budgetId);
 
-		if (!checkPermissionForBudget(budgetRepository.findOneById(budgetId), userService.getLoggedUserLogin(),
+		if (!checkPermissionForBudget(budget, userLogin,
 				PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
-			Set<Income> incomes = budgetRepository.findOneById(budgetId).getIncomes();
+			Set<Income> incomes = budget.getIncomes();
 			List<IncomeType> allIncomeTypes = new ArrayList<IncomeType>(Arrays.asList(IncomeType.values()));
 
 			for (IncomeType incomeType : allIncomeTypes) {
 				Double sumIncomesOfType = incomes.stream().filter(type -> type.getIncomeType().equals(incomeType))
+						.filter(nullDate -> nullDate.getDateTime() != null)
 						.filter(date -> date.getDateTime().after(dateFrom) && date.getDateTime().before(dateTo))
 						.mapToDouble(item -> item.getAmount()).sum();
 
