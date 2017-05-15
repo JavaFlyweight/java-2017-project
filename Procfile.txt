@@ -1,1 +1,1 @@
-web:    java $JAVA_OPTS -jar budget-webapp/target/dependency/webapp-runner.jar --port $PORT budget-webapp/target/*.war
+web: java -jar budget-webapp/target/budget-webapp-0.0.1-SNAPSHOT.jar
