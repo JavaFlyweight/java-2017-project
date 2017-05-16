@@ -1,1 +1,1 @@
-web: java -war budget-webapp/target/webapp.war
+web: java $JAVA_OPTS -jar budget-webapp/target/dependency/webapp-runner.jar budget-webapp/target/webapp.war
