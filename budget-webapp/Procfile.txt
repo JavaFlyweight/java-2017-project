@@ -1,0 +1,2 @@
+hello: java $JAVA_OPTS -jar webapp-runner.jar --port 10000 ./target/test.war
+web: java $JAVA_OPTS -jar webapp-runner.jar --port $PORT ./target/test.war
