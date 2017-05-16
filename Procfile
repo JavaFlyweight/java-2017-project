@@ -1,0 +1,1 @@
+web: java -war budget-webapp/target/webapp.war
