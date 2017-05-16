@@ -99,7 +99,7 @@ public class ReportServiceImpl implements ReportService {
 		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
-			long numberOfDays = ((budget.getDateTo().getTime() - new Date().getTime()) / 60 / 60 / 24) + 1;
+			long numberOfDays = ((budget.getDateTo().getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24) + 1;
 			dailyLimit = new BigDecimal(budget.getBalance() / numberOfDays);
 		}
 		return dailyLimit.setScale(2, RoundingMode.DOWN);

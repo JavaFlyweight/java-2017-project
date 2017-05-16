@@ -5,6 +5,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -106,6 +108,64 @@ public class ReportServiceTest {
 		verify(userService, times(1)).getLoggedUserLogin();
 		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
 	}
+	
+	
+	
+	@Test
+	public void shouldGetDailyLimitForBugdetById() {
+		final BigDecimal limitFromRepository = stubRepositoryToGetDailyLimit();
+		final BigDecimal returnedLimit = reportService.getDailyLimit(BUDGET_ID);
+
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+		assertEquals("Returned limits should be the same", limitFromRepository, returnedLimit);
+	}
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetDailyLimitForBugdetByIdForUserWithoutAccesView_TheExceptionShouldBeThrown() {
+		final BigDecimal limitFromRepository = stubRepositoryToGetDailyLimitForUserWithoutAccessView();
+		final BigDecimal returnedLimit = reportService.getDailyLimit(BUDGET_ID);
+
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	@Test(expected = BudgetForbiddenAccessException.class)
+	public void shouldGetDailyLimitForBugdetByIdForNotLoggedUser_TheExceptionShouldBeThrown() {
+		final BigDecimal limitFromRepository = stubRepositoryToGetDailyLimitForNotLoggedUser();
+		final BigDecimal returnedLimit = reportService.getDailyLimit(BUDGET_ID);
+
+		verify(userService, times(1)).getLoggedUserLogin();
+		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+	}
+	
+	private BigDecimal stubRepositoryToGetDailyLimitForNotLoggedUser(){
+		final BigDecimal dailyLimitFromRepository = new BigDecimal(1.09).setScale(2, RoundingMode.DOWN);
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		return dailyLimitFromRepository;
+	}
+	
+	private BigDecimal stubRepositoryToGetDailyLimitForUserWithoutAccessView(){
+		final BigDecimal dailyLimitFromRepository = new BigDecimal(1.09).setScale(2, RoundingMode.DOWN);
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN2,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+		return dailyLimitFromRepository;
+	}
+	
+	private BigDecimal stubRepositoryToGetDailyLimit(){
+		final BigDecimal dailyLimitFromRepository = new BigDecimal(1.09).setScale(2, RoundingMode.DOWN);
+		final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN,
+				PermissionType.VIEW);
+		when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+		when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+		return dailyLimitFromRepository;
+	}
+	
+	
 	
 	private Map<ExpenseType,Double> stubRepositoryToGetReportWithExpensesForUserWithoutAccessView(){
 		final Map<ExpenseType, Double> reportFromRepository = createReportWithExpensesForBudget();
