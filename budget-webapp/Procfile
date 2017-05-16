@@ -1,2 +1,2 @@
-hello: java $JAVA_OPTS -jar ./target/webapp-runner.jar --port 10000 ./target/webapp.war
-web: java $JAVA_OPTS -jar ./target/webapp-runner.jar --port $PORT ./target/webapp.war
+hello: java $JAVA_OPTS -jar ./target/dependency/webapp-runner.jar --port 10000 ./target/webapp.war
+web: java $JAVA_OPTS -jar ./target/dependency/webapp-runner.jar --port $PORT ./target/webapp.war
