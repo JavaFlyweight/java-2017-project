@@ -1,5 +1,6 @@
 package com.example.java.webapp.endpoints;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -40,5 +41,11 @@ public class ReportController {
 			@RequestParam Date dateTo) {
 		LOGGER.debug("Start getSumsIncomesPerType with budgetId {0}", new Object[] { budgetId });
 		return reportService.getAllSumsIncomesPerType(budgetId, dateFrom, dateTo);
+	}
+	
+	@RequestMapping(value = "/getDailyLimitToView", method = RequestMethod.GET)
+	public BigDecimal getDailyLimit(@RequestParam UUID budgetId) {
+		LOGGER.debug("Start getDailyLimit with budgetId {0}", new Object[] { budgetId });
+		return reportService.getDailyLimit(budgetId);
 	}
 }

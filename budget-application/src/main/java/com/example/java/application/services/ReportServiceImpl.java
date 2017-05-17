@@ -1,5 +1,8 @@
 package com.example.java.application.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -54,7 +57,6 @@ public class ReportServiceImpl implements ReportService {
 						.filter(nullDate -> nullDate.getDateTime() != null)
 						.filter(date -> date.getDateTime().after(dateFrom) && date.getDateTime().before(dateTo))
 						.mapToDouble(item -> item.getAmount()).sum();
-				
 
 				allSumsExpensesPerType.put(expenseType, sumExpensesOfType);
 			}
@@ -70,8 +72,7 @@ public class ReportServiceImpl implements ReportService {
 		Map<IncomeType, Double> allSumsIncomesPerType = new LinkedHashMap<IncomeType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
 
-		if (!checkPermissionForBudget(budget, userLogin,
-				PermissionType.VIEW)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Income> incomes = budget.getIncomes();
@@ -87,6 +88,21 @@ public class ReportServiceImpl implements ReportService {
 			}
 			return allSumsIncomesPerType;
 		}
+	}
+
+	@Override
+	public BigDecimal getDailyLimit(UUID budgetId) {
+		String userLogin = userService.getLoggedUserLogin();
+		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
+		Budget budget = budgetRepository.findOneById(budgetId);
+		BigDecimal dailyLimit;
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
+			throw new BudgetForbiddenAccessException(budgetId);
+		} else {
+			long numberOfDays = ((budget.getDateTo().getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24) + 1;
+			dailyLimit = new BigDecimal(budget.getBalance() / numberOfDays);
+		}
+		return dailyLimit.setScale(2, RoundingMode.DOWN);
 	}
 
 }
