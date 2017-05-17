@@ -12,6 +12,8 @@ public class Expense extends Operation {
 	@Getter
 	private ExpenseType expenseType;
 
+        public Expense(){};
+        
 	public Expense(String name, double amount, UUID addedBy, ExpenseType expenseType, Date dateTime) {
 		this.name = name;
 		this.amount = amount;

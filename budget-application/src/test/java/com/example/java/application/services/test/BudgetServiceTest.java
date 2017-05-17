@@ -7,7 +7,9 @@ import com.example.java.application.services.UtilsService;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.commons.exceptions.BudgetNotFoundException;
+import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
 import com.example.java.commons.exceptions.UserAlreadyHasBudget;
+import com.example.java.commons.exceptions.WrongPermissionTypeException;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.Permission;
@@ -79,7 +81,7 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldGetOneBudgetEntityByIdAndOwnerPermission() {
-        final Budget budgetFromRepository = stubRepositoryToGetOneBudgetEntityByIdWithViewPermission(PermissionType.VIEW, PermissionType.OWNER,
+        final Budget budgetFromRepository = stubRepositoryToGetOneBudgetEntityByIdWithViewPermission(PermissionType.OWNER, PermissionType.OWNER,
                 PermissionType.EDIT, PermissionType.VIEW);
         final Budget returnedBudget = budgetService.getOneById(BUDGET_ID, PermissionType.OWNER,
                 PermissionType.EDIT, PermissionType.VIEW);
@@ -91,7 +93,7 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldGetOneBudgetEntityByIdAndEditPermission() {
-        final Budget budgetFromRepository = stubRepositoryToGetOneBudgetEntityByIdWithViewPermission(PermissionType.VIEW, PermissionType.OWNER,
+        final Budget budgetFromRepository = stubRepositoryToGetOneBudgetEntityByIdWithViewPermission(PermissionType.EDIT, PermissionType.OWNER,
                 PermissionType.EDIT, PermissionType.VIEW);
         final Budget returnedBudget = budgetService.getOneById(BUDGET_ID, PermissionType.OWNER,
                 PermissionType.EDIT, PermissionType.VIEW);
@@ -99,6 +101,16 @@ public class BudgetServiceTest {
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
         assertEquals("Returned budget should be the same as repository budget", budgetFromRepository, returnedBudget);
+    }
+
+    @Test(expected = BudgetNotFoundException.class)
+    public void shouldGetOneBudgetEntityById_TheExceptionShouldBeThrown() {
+        stubRepositoryToGetNullBudgetEntity();
+        budgetService.getOneById(BUDGET_ID, PermissionType.OWNER,
+                PermissionType.EDIT, PermissionType.VIEW);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
     }
 
     @Test(expected = BudgetForbiddenAccessException.class)
@@ -203,9 +215,9 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldEditBudgetEntity_PlannedAmountShouldBeSet() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -215,9 +227,9 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldEditBudgetEntity_BalanceShouldNotBeSet() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -227,9 +239,9 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldEditBudgetEntity_BalanceShouldBeNotChange() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         final Budget budgetFromRepository = stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -239,9 +251,9 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldEditBudgetEntity_DateFromShouldBeSet() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -251,9 +263,9 @@ public class BudgetServiceTest {
 
     @Test
     public void shouldEditBudgetEntity_DateToShouldBeSet() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -263,9 +275,9 @@ public class BudgetServiceTest {
 
     @Test(expected = BudgetForbiddenAccessException.class)
     public void shouldEditBudgetEntity_TheExceptionShouldBeThrown() {
-        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId(BUDGET_ID);
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudgetFalsePermission(PermissionType.VIEW, PermissionType.OWNER, PermissionType.EDIT);
-        budgetService.editBudgetEntity(dataToEdit);
+        budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -278,6 +290,42 @@ public class BudgetServiceTest {
         PowerMockito.mockStatic(UtilsService.class);
         PowerMockito.when(UtilsService.checkPermissionForBudget(budgetFromRepository, USER_LOGIN, permissionTypes)).thenReturn(true);
         return budgetFromRepository;
+    }
+
+    @Test
+    public void shouldShareBudgetEntity() {
+        final Budget budgetFromRepository = stubRepositoryToShareBudget();
+        final Budget returnedBudget = budgetService.shareBudget(BUDGET_ID, USER_LOGIN, PermissionType.EDIT);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
+        assertEquals("Returned budget should be the same as repository budget", budgetFromRepository, returnedBudget);
+    }
+
+    @Test(expected = WrongPermissionTypeException.class)
+    public void shouldShareBudgetEntityWhereTryAddOwnerPermission_TheExceptionShouldBeThrown() {
+        stubRepositoryToShareBudget();
+        budgetService.shareBudget(BUDGET_ID, USER_LOGIN, PermissionType.OWNER);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
+    }
+
+    @Test(expected = PermissionIsAddedAlreadyException.class)
+    public void shouldShareBudgetEntityWhereUserHasThisPermission_TheExceptionShouldBeThrown() {
+        final Budget budgetFromRepository = stubRepositoryToShareBudgetWithEditPermission();
+        final Budget returnedBudget = budgetService.shareBudget(BUDGET_ID, USER_LOGIN2, PermissionType.EDIT);
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
+        assertEquals("Returned budget should be the same as repository budget", budgetFromRepository, returnedBudget);
+    }
+
+    private void stubRepositoryToGetNullBudgetEntity() {
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(null);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
     }
 
     private void stubRepositoryToGetOneBudgetEntityByIdWithOtherUserPermission(PermissionType... permissionTypes) {
@@ -346,4 +394,28 @@ public class BudgetServiceTest {
         };
     }
 
+    private Budget stubRepositoryToShareBudget() {
+        final Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.OWNER);
+        final Budget budgetToSave = BudgetTestUtils.addPermissionToBudget(budgetFromRepository, USER_LOGIN2, PermissionType.EDIT);
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+        when(budgetRepository.save(any(Budget.class))).thenReturn(budgetToSave);
+
+        PowerMockito.mockStatic(UtilsService.class);
+        PowerMockito.when(UtilsService.checkPermissionForBudget(budgetFromRepository, USER_LOGIN, PermissionType.OWNER)).thenReturn(true);
+        return budgetToSave;
+    }
+
+    private Budget stubRepositoryToShareBudgetWithEditPermission() {
+        Budget budgetFromRepository = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.OWNER);
+        budgetFromRepository = BudgetTestUtils.addPermissionToBudget(budgetFromRepository, USER_LOGIN2, PermissionType.EDIT);
+        final Budget budgetToSave = BudgetTestUtils.addPermissionToBudget(budgetFromRepository, USER_LOGIN2, PermissionType.EDIT);
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+        when(budgetRepository.save(any(Budget.class))).thenReturn(budgetToSave);
+
+        PowerMockito.mockStatic(UtilsService.class);
+        PowerMockito.when(UtilsService.checkPermissionForBudget(budgetFromRepository, USER_LOGIN, PermissionType.OWNER)).thenReturn(true);
+        return budgetToSave;
+    }
 }

@@ -11,6 +11,8 @@ public class Income extends Operation {
 
 	@Getter
 	private IncomeType incomeType;
+        
+        public Income(){};
 
 	public Income(String name, double amount, UUID addedBy, IncomeType incomeType, Date dateTime) {
 		this.name = name;

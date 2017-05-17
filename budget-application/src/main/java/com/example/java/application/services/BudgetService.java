@@ -3,10 +3,7 @@ package com.example.java.application.services;
 import com.example.java.commons.enums.PermissionType;
 import java.util.List;
 import java.util.UUID;
-
 import com.example.java.domain.model.Budget;
-import com.example.java.domain.model.Expense;
-import com.example.java.domain.model.Income;
 
 public interface BudgetService {
 
@@ -16,13 +13,13 @@ public interface BudgetService {
     
     public Budget getOneByUserLoginAndOwner();
 
-
     public List<Budget> getSharedBudgets();
 
-    public Budget editBudgetEntity(Budget dataToEditBudget);
+    public Budget editBudgetEntity(UUID budgetId, Budget dataToEditBudget);
+    
+    public void deleteBudgetEntity(UUID budgetId);
 
-    public Budget addNewIncome(UUID budgetId, Income income);
-
-
-    public Budget addNewExpense(UUID budgetId, Expense expense);
+    public Budget shareBudget(UUID budgetId, String userLogin, PermissionType permissionType);
+    
+    public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision);
 }

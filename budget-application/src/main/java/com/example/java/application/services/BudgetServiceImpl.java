@@ -12,8 +12,6 @@ import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.commons.exceptions.BudgetNotFoundException;
 import com.example.java.domain.model.Budget;
-import com.example.java.domain.model.Expense;
-import com.example.java.domain.model.Income;
 import com.example.java.domain.model.Permission;
 import com.example.java.repository.BudgetRepository;
 import java.util.HashSet;
@@ -21,10 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.example.java.application.services.UtilsService.checkPermissionForBudget;
+import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
+import com.example.java.commons.exceptions.PermissionNotFoundException;
+import com.example.java.commons.exceptions.WrongPermissionTypeException;
+import java.util.Iterator;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BudgetServiceImpl.class);
 
@@ -38,7 +39,11 @@ public class BudgetServiceImpl implements BudgetService {
     public Budget getOneById(UUID budgetId, PermissionType... permissionTypes) {
         String userLogin = userService.getLoggedUserLogin();
         Budget budgetToReturn = budgetRepository.findOneById(budgetId);
-        if (!checkPermissionForBudget(budgetToReturn, userLogin, permissionTypes )) {
+        if (budgetToReturn == null) {
+            throw new BudgetNotFoundException(budgetId);
+        }
+        
+        if (!checkPermissionForBudget(budgetToReturn, userLogin, permissionTypes)) {
             throw new BudgetForbiddenAccessException(budgetId);
         }
         return budgetToReturn;
@@ -80,50 +85,55 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Budget editBudgetEntity(Budget dataToEditBudget) {
-        //TODO check id is not epty
-        Budget budgetToEdit = getOneById(dataToEditBudget.getId(), PermissionType.OWNER,PermissionType.EDIT);
+    public Budget editBudgetEntity(UUID budgetId, Budget dataToEditBudget) {
+        Budget budgetToEdit = getOneById(budgetId, PermissionType.OWNER, PermissionType.EDIT);
         budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
         budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
         return budgetRepository.save(budgetToEdit);
     }
+    
+        @Override
+    public void deleteBudgetEntity(UUID budgetId) {
+        Budget budgetToDelete = getOneById(budgetId,PermissionType.OWNER);
+        budgetRepository.delete(budgetToDelete);
+    }
+    
 
     @Override
-    public Budget addNewIncome(UUID budgetId, Income income) {
-        Budget editedBudget = getOneById(budgetId);
-
-        if (editedBudget == null) {
-            throw new BudgetNotFoundException(budgetId);
+    public Budget shareBudget(UUID budgetId, String userLoginWithWillGetPermission, PermissionType permissionType) {
+        Budget budgetToShare = getOneById(budgetId, PermissionType.OWNER);
+        if (!permissionType.equals(PermissionType.EDIT) && !permissionType.equals(PermissionType.VIEW)) {
+            throw new WrongPermissionTypeException(permissionType);
+        }
+        Set<Permission> permissions = budgetToShare.getPermissions();
+        for (Iterator<Permission> i = permissions.iterator(); i.hasNext();) {
+            Permission  permission= i.next();
+            if (permission.getUserLogin().equals(userLoginWithWillGetPermission)) {
+                if (permission.getPermissionType().equals(permissionType)) {
+                    throw new PermissionIsAddedAlreadyException(userLoginWithWillGetPermission, budgetId);
+                } else {
+                    permissions.remove(permission);
+                }
+            }
         }
 
-        Set<Income> incomes = editedBudget.getIncomes();
-        incomes.add(income);
-
-        editedBudget.setIncomes(incomes);
-
-        budgetRepository.save(editedBudget);
-
-        return editedBudget;
+        permissions.add(new Permission(userLoginWithWillGetPermission, permissionType));
+        budgetToShare.setPermissions(permissions);
+        return budgetRepository.save(budgetToShare);
     }
 
     @Override
-    public Budget addNewExpense(UUID budgetId, Expense expense) {
-        Budget editedBudget = getOneById(budgetId);
-
-        if (editedBudget == null) {
-            throw new BudgetNotFoundException(budgetId);
+    public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision) {
+        Budget budgetToShare = getOneById(budgetId, PermissionType.OWNER);
+        Set<Permission> permissions = budgetToShare.getPermissions();
+        for (Iterator<Permission> i = permissions.iterator(); i.hasNext();) {
+            Permission  permission= i.next();
+            if (permission.getUserLogin().equals(userLoginToRemovePermision)) {
+                permissions.remove(permission);
+                return budgetRepository.save(budgetToShare);
+            }
         }
-
-        Set<Expense> expenses = editedBudget.getExpenses();
-        expenses.add(expense);
-
-        editedBudget.setExpenses(expenses);
-
-        budgetRepository.save(editedBudget);
-
-        return editedBudget;
+        throw new PermissionNotFoundException(userLoginToRemovePermision, budgetId);
     }
-
-
 }
