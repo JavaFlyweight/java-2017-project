@@ -42,7 +42,7 @@ public class BudgetServiceImpl implements BudgetService {
         if (budgetToReturn == null) {
             throw new BudgetNotFoundException(budgetId);
         }
-        
+
         if (!checkPermissionForBudget(budgetToReturn, userLogin, permissionTypes)) {
             throw new BudgetForbiddenAccessException(budgetId);
         }
@@ -92,13 +92,12 @@ public class BudgetServiceImpl implements BudgetService {
         budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
         return budgetRepository.save(budgetToEdit);
     }
-    
-        @Override
+
+    @Override
     public void deleteBudgetEntity(UUID budgetId) {
-        Budget budgetToDelete = getOneById(budgetId,PermissionType.OWNER);
+        Budget budgetToDelete = getOneById(budgetId, PermissionType.OWNER);
         budgetRepository.delete(budgetToDelete);
     }
-    
 
     @Override
     public Budget shareBudget(UUID budgetId, String userLoginWithWillGetPermission, PermissionType permissionType) {
@@ -107,15 +106,16 @@ public class BudgetServiceImpl implements BudgetService {
             throw new WrongPermissionTypeException(permissionType);
         }
         Set<Permission> permissions = budgetToShare.getPermissions();
-        for (Iterator<Permission> i = permissions.iterator(); i.hasNext();) {
-            Permission  permission= i.next();
+        for (Permission permission : permissions) {
+            Set<Permission> listToRemovePermission = new HashSet<>(permissions);
             if (permission.getUserLogin().equals(userLoginWithWillGetPermission)) {
                 if (permission.getPermissionType().equals(permissionType)) {
                     throw new PermissionIsAddedAlreadyException(userLoginWithWillGetPermission, budgetId);
                 } else {
-                    permissions.remove(permission);
+                    listToRemovePermission.remove(permission);
                 }
             }
+            permissions = listToRemovePermission;
         }
 
         permissions.add(new Permission(userLoginWithWillGetPermission, permissionType));
@@ -127,12 +127,13 @@ public class BudgetServiceImpl implements BudgetService {
     public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision) {
         Budget budgetToShare = getOneById(budgetId, PermissionType.OWNER);
         Set<Permission> permissions = budgetToShare.getPermissions();
-        for (Iterator<Permission> i = permissions.iterator(); i.hasNext();) {
-            Permission  permission= i.next();
+        for (Permission permission : permissions) {
+            Set<Permission> listToRemovePermission = new HashSet<>(permissions);
             if (permission.getUserLogin().equals(userLoginToRemovePermision)) {
-                permissions.remove(permission);
+                listToRemovePermission.remove(permission);
                 return budgetRepository.save(budgetToShare);
             }
+            permissions = listToRemovePermission;
         }
         throw new PermissionNotFoundException(userLoginToRemovePermision, budgetId);
     }
