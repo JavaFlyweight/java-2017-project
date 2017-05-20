@@ -33,6 +33,7 @@ public class ExpenseServiceimpl implements ExpenseService {
         Set<Expense> expenses = budgetToAddExpense.getExpenses();
         expenses.add(expenseToAdd);
         budgetToAddExpense.setExpenses(expenses);
+        budgetToAddExpense.setBalance(budgetToAddExpense.getBalance()-expenseToAdd.getAmount());
         return budgetRepository.save(budgetToAddExpense);
     }
 
@@ -48,6 +49,7 @@ public class ExpenseServiceimpl implements ExpenseService {
             }
         }
         budgetToAddExpense.setExpenses(expenses);
+        budgetToAddExpense.setBalance(budgetToAddExpense.getBalance()+expenseToDelete.getAmount());
         return budgetRepository.save(budgetToAddExpense);
     }
 }

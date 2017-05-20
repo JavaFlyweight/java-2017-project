@@ -51,7 +51,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget createBudgetEntity(Budget dataToCreateBudget) {
-        Budget budgetToSave = new Budget(dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
+        Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
         permissions.add(new Permission(userLogin, PermissionType.OWNER));
@@ -90,6 +90,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
         budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
+        budgetToEdit.setName(dataToEditBudget.getName());
         return budgetRepository.save(budgetToEdit);
     }
 
@@ -125,13 +126,13 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision) {
-        Budget budgetToShare = getOneById(budgetId, PermissionType.OWNER);
-        Set<Permission> permissions = budgetToShare.getPermissions();
+        Budget budgetToUnshare = getOneById(budgetId, PermissionType.OWNER);
+        Set<Permission> permissions = budgetToUnshare.getPermissions();
         for (Permission permission : permissions) {
             Set<Permission> listToRemovePermission = new HashSet<>(permissions);
             if (permission.getUserLogin().equals(userLoginToRemovePermision)) {
                 listToRemovePermission.remove(permission);
-                return budgetRepository.save(budgetToShare);
+                return budgetRepository.save(budgetToUnshare);
             }
             permissions = listToRemovePermission;
         }

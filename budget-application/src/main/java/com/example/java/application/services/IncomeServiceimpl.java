@@ -33,6 +33,7 @@ public class IncomeServiceimpl implements IncomeService {
         Set<Income> incomes = budgetToAddIncome.getIncomes();
         incomes.add(incomeToAdd);
         budgetToAddIncome.setIncomes(incomes);
+        budgetToAddIncome.setBalance(budgetToAddIncome.getBalance()+incomeToAdd.getAmount());
         return budgetRepository.save(budgetToAddIncome);
     }
 
@@ -47,6 +48,7 @@ public class IncomeServiceimpl implements IncomeService {
             }
         }
         budgetToAddIncome.setIncomes(incomes);
+        budgetToAddIncome.setBalance(budgetToAddIncome.getBalance()-incomeToDelete.getAmount());
         return budgetRepository.save(budgetToAddIncome);
     }
 }

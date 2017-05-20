@@ -18,7 +18,10 @@ public class Budget {
 	@Getter
         @Setter
 	private UUID id;
-
+        
+        @Getter
+	@Setter
+        private String name;
 	@Getter
 	@Setter
 	private Set<Permission> permissions = new HashSet<>();
@@ -51,7 +54,8 @@ public class Budget {
             this.id = UUID.randomUUID();
         }
         
-        public Budget(double balance,double plannedAmount, Date dateFrom, Date dateTo){
+        public Budget(String name, double balance,double plannedAmount, Date dateFrom, Date dateTo){
+            this.name=name;
             this.balance=balance;
             this.plannedAmount=plannedAmount;
             this.dateFrom=dateFrom;

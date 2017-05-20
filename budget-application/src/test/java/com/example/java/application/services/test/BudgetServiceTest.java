@@ -8,6 +8,7 @@ import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.commons.exceptions.BudgetNotFoundException;
 import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
+import com.example.java.commons.exceptions.PermissionNotFoundException;
 import com.example.java.commons.exceptions.UserAlreadyHasBudget;
 import com.example.java.commons.exceptions.WrongPermissionTypeException;
 import com.example.java.domain.model.Budget;
@@ -217,7 +218,7 @@ public class BudgetServiceTest {
     public void shouldEditBudgetEntity_PlannedAmountShouldBeSet() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -229,7 +230,7 @@ public class BudgetServiceTest {
     public void shouldEditBudgetEntity_BalanceShouldNotBeSet() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -241,7 +242,7 @@ public class BudgetServiceTest {
     public void shouldEditBudgetEntity_BalanceShouldBeNotChange() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         final Budget budgetFromRepository = stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -253,7 +254,7 @@ public class BudgetServiceTest {
     public void shouldEditBudgetEntity_DateFromShouldBeSet() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -265,7 +266,7 @@ public class BudgetServiceTest {
     public void shouldEditBudgetEntity_DateToShouldBeSet() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
-        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -273,11 +274,23 @@ public class BudgetServiceTest {
         assertEquals("Returned dateTo should be the same as in dataToEdit", dataToEdit.getDateTo(), returnedBudget.getDateTo());
     }
 
+    @Test
+    public void shouldEditBudgetEntity_NameShouldBeSet() {
+        Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
+        stubRepositoryToEditBudget(PermissionType.OWNER, PermissionType.OWNER, PermissionType.EDIT);
+        final Budget returnedBudget = budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
+        assertEquals("Returned name should be the same as in dataToEdit", dataToEdit.getName(), returnedBudget.getName());
+    }
+
     @Test(expected = BudgetForbiddenAccessException.class)
     public void shouldEditBudgetEntity_TheExceptionShouldBeThrown() {
         Budget dataToEdit = BudgetTestUtils.createOneBudgetDataToEditWithId();
         stubRepositoryToEditBudgetFalsePermission(PermissionType.VIEW, PermissionType.OWNER, PermissionType.EDIT);
-        budgetService.editBudgetEntity(BUDGET_ID,dataToEdit);
+        budgetService.editBudgetEntity(BUDGET_ID, dataToEdit);
 
         verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
         verify(userService, times(1)).getLoggedUserLogin();
@@ -321,6 +334,27 @@ public class BudgetServiceTest {
         verify(userService, times(1)).getLoggedUserLogin();
         verify(budgetRepository, times(1)).save(any(Budget.class));
         assertEquals("Returned budget should be the same as repository budget", budgetFromRepository, returnedBudget);
+    }
+
+    @Test
+    public void shouldUnshareBudgetEntity() {
+        final Budget budgetFromRepository = stubRepositoryToUnshareBudget();
+        final Budget returnedBudget = budgetService.unshareBudget(BUDGET_ID, USER_LOGIN2);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
+        assertEquals("Returned budget should be the same as repository budget", budgetFromRepository, returnedBudget);
+    }
+
+    @Test(expected = PermissionNotFoundException.class)
+    public void shouldUnshareBudgetEntity_TheExceptionShouldBeThrown() {
+        stubRepositoryToUnshareBudgetWithoutPermission();
+        budgetService.unshareBudget(BUDGET_ID, USER_LOGIN2);
+
+        verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
+        verify(userService, times(1)).getLoggedUserLogin();
+        verify(budgetRepository, times(1)).save(any(Budget.class));
     }
 
     private void stubRepositoryToGetNullBudgetEntity() {
@@ -418,4 +452,28 @@ public class BudgetServiceTest {
         PowerMockito.when(UtilsService.checkPermissionForBudget(budgetFromRepository, USER_LOGIN, PermissionType.OWNER)).thenReturn(true);
         return budgetToSave;
     }
+
+    private Budget stubRepositoryToUnshareBudget() {
+        final Budget budgetToSave = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.OWNER);
+        final Budget budgetFromRepository = BudgetTestUtils.addPermissionToBudget(budgetToSave, USER_LOGIN2, PermissionType.EDIT);
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetFromRepository);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+        when(budgetRepository.save(any(Budget.class))).thenReturn(budgetToSave);
+
+        PowerMockito.mockStatic(UtilsService.class);
+        PowerMockito.when(UtilsService.checkPermissionForBudget(budgetFromRepository, USER_LOGIN, PermissionType.OWNER)).thenReturn(true);
+        return budgetToSave;
+    }
+
+    private Budget stubRepositoryToUnshareBudgetWithoutPermission() {
+        final Budget budgetToSave = BudgetTestUtils.createOneBudgetEntityByIdWithPermission(USER_LOGIN, PermissionType.OWNER);
+        when(budgetRepository.findOneById(BUDGET_ID)).thenReturn(budgetToSave);
+        when(userService.getLoggedUserLogin()).thenReturn(USER_LOGIN);
+        when(budgetRepository.save(any(Budget.class))).thenReturn(budgetToSave);
+
+        PowerMockito.mockStatic(UtilsService.class);
+        PowerMockito.when(UtilsService.checkPermissionForBudget(budgetToSave, USER_LOGIN, PermissionType.OWNER)).thenReturn(true);
+        return budgetToSave;
+    }
+
 }
