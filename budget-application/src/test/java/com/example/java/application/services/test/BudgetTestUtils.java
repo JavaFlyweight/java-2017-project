@@ -4,6 +4,8 @@ import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
+import com.example.java.domain.model.BudgetCreateRequest;
+import com.example.java.domain.model.BudgetEditRequest;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.Income;
 import com.example.java.domain.model.Permission;
@@ -36,12 +38,19 @@ public class BudgetTestUtils {
         return createdBudget;
     }
 
-    public static Budget createOneBudgetDataToEditWithId() {
+    public static BudgetCreateRequest createBudgetCreateRequestEntity(String userLogin, PermissionType permissionType) {
+        Date date = new Date();
+        date.setTime(new Date().getTime() + 11 * 24 * 60 * 60 * 1000);
+        final BudgetCreateRequest createdBudget = new BudgetCreateRequest("Rodzinny", 12.03, 1234.76, new Date(), date);
+        return createdBudget;
+    }
+    
+    public static BudgetEditRequest createOneBudgetDataToEditWithId() {
         Date date = new Date();
         date.setTime(new Date().getTime() + 11 * 24 * 60 * 3 * 60 * 1000);
         Date date2 = new Date();
         date2.setTime(new Date().getTime() + 22 * 24 * 60 * 60 * 1000);
-        final Budget dataToEdit = new Budget("Rodzinny", 24.03, 4321.76, date, date2);
+        final BudgetEditRequest dataToEdit = new BudgetEditRequest("Rodzinny", 4321.76, date, date2);
         return dataToEdit;
     }
 

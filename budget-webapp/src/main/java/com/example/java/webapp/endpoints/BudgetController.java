@@ -18,6 +18,8 @@ import com.example.java.application.services.BudgetService;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
+import com.example.java.domain.model.BudgetCreateRequest;
+import com.example.java.domain.model.BudgetEditRequest;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
@@ -39,7 +41,7 @@ public class BudgetController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Budget createBudgetEntity(@RequestBody Budget dataToCreateBudget) {
+    public Budget createBudgetEntity(@RequestBody BudgetCreateRequest dataToCreateBudget) {
         LOGGER.info("Start createBudgetEntity {} {} {} {}",
                 new Object[]{dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo()});
 
@@ -59,7 +61,7 @@ public class BudgetController {
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Budget editBudgetEntity(@RequestParam UUID budgetId, @RequestBody Budget dataToEditBudget) {
+    public Budget editBudgetEntity(@RequestParam UUID budgetId, @RequestBody BudgetEditRequest dataToEditBudget) {
         LOGGER.info("Start editBudgetEntity {} {} {} {} ", new Object[]{budgetId, dataToEditBudget.getPlannedAmount(), dataToEditBudget.getDateFrom(), dataToEditBudget.getDateTo()});
         return budgetService.editBudgetEntity(budgetId, dataToEditBudget);
     }

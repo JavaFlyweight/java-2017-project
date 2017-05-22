@@ -22,6 +22,8 @@ import static com.example.java.application.services.UtilsService.checkPermission
 import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
 import com.example.java.commons.exceptions.PermissionNotFoundException;
 import com.example.java.commons.exceptions.WrongPermissionTypeException;
+import com.example.java.domain.model.BudgetCreateRequest;
+import com.example.java.domain.model.BudgetEditRequest;
 import java.util.Iterator;
 
 @Service
@@ -50,7 +52,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Budget createBudgetEntity(Budget dataToCreateBudget) {
+    public Budget createBudgetEntity(BudgetCreateRequest dataToCreateBudget) {
         Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
@@ -85,7 +87,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public Budget editBudgetEntity(UUID budgetId, Budget dataToEditBudget) {
+    public Budget editBudgetEntity(UUID budgetId, BudgetEditRequest dataToEditBudget) {
         Budget budgetToEdit = getOneById(budgetId, PermissionType.OWNER, PermissionType.EDIT);
         budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
