@@ -16,37 +16,40 @@ import com.example.java.commons.http.UrlPathHelper;
 
 @Controller
 public class DefaultController {
-	
-	private static final String USER_NAME = "userName";
-	
-	private static final String REDIRECT = "redirect:";
 
-	@RequestMapping(value = UrlPathHelper.LOGOUT, method = RequestMethod.GET)
-	public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    private static final String USER_NAME = "userName";
 
-		if (auth != null) {
-			new SecurityContextLogoutHandler().logout(request, response, auth);
-		}
+    private static final String REDIRECT = "redirect:";
 
-		return REDIRECT + UrlPathHelper.INDEX;
-	}
 
-	@RequestMapping(value = UrlPathHelper.INDEX, method = RequestMethod.GET)
-	public ModelAndView indexPage(HttpServletRequest request) {
-		ModelAndView modelAndView = new ModelAndView(ViewTemplatesResolver.INDEX.toString());	
-		
-		if (request.getRemoteUser() != null) {
-			modelAndView.addObject(USER_NAME, request.getRemoteUser());			
-		}
-				
-		return modelAndView;
-	}
-	
-	@RequestMapping(value = UrlPathHelper.LOGIN, method = RequestMethod.GET)
-	public ModelAndView loginPage() {
-		ModelAndView modelAndView = new ModelAndView(ViewTemplatesResolver.LOGIN.toString());
-		
-		return modelAndView;
-	}
+    @RequestMapping(value = UrlPathHelper.LOGOUT, method = RequestMethod.GET)
+    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+
+        return REDIRECT + UrlPathHelper.INDEX;
+    }
+
+
+    @RequestMapping(value = UrlPathHelper.INDEX, method = RequestMethod.GET)
+    public ModelAndView indexPage(HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("index");
+
+        if (request.getRemoteUser() != null) {
+            modelAndView.addObject(USER_NAME, request.getRemoteUser());
+        }
+
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value = UrlPathHelper.LOGIN, method = RequestMethod.GET)
+    public ModelAndView loginPage() {
+        ModelAndView modelAndView = new ModelAndView("login");
+
+        return modelAndView;
+    }
 }
