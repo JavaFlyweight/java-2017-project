@@ -46,7 +46,7 @@ public class DefaultController {
     }
 
 
-    @RequestMapping(value = UrlPathHelper.LOGIN, method = RequestMethod.GET)
+    @RequestMapping(value = "/loginPage", method = RequestMethod.GET)
     public ModelAndView loginPage() {
         ModelAndView modelAndView = new ModelAndView("login");
 
