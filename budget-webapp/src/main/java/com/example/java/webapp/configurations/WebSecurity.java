@@ -17,32 +17,29 @@ import com.example.java.commons.enums.SecurityRoles;
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	UserDetailsService userDetailsService;
+    @Autowired
+    UserDetailsService userDetailsService;
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService);
-	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		setUserServicePermission(http);				
-	}
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
-	private void setUserServicePermission(HttpSecurity http) throws Exception {
-		List<String> permission = new ArrayList<>();
-		permission.add(SecurityRoles.USER.toString());
-		permission.add(SecurityRoles.ADMIN.toString());
-		permission.add(SecurityRoles.SERVICE.toString());
-		
-		http
-		.httpBasic().and()
-	      .authorizeRequests()
-	        .antMatchers("/user/**").hasAnyRole(permission.toArray(new String[permission.size()])).and()
-	      .formLogin()
-          .loginPage("/login").permitAll()
-          .and()
-          .logout().permitAll();
-	}	
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        setUserServicePermission(http);
+    }
+
+
+    private void setUserServicePermission(HttpSecurity http) throws Exception {
+        List<String> permission = new ArrayList<>();
+        permission.add(SecurityRoles.USER.toString());
+        permission.add(SecurityRoles.ADMIN.toString());
+        permission.add(SecurityRoles.SERVICE.toString());
+
+        http.csrf().disable().httpBasic().and().authorizeRequests().antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()])).and().formLogin().loginPage("/login")
+                .permitAll().and().logout().permitAll();
+    }
 }
