@@ -14,52 +14,55 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Budget")
 public class Budget {
 
-	@Id
-	@Getter
-        @Setter
-	private UUID id;
-        
-        @Getter
-	@Setter
-        private String name;
-	@Getter
-	@Setter
-	private Set<Permission> permissions = new HashSet<>();
+    @Id
+    @Getter
+    @Setter
+    private UUID id;
 
-	@Getter
-	@Setter
-	private Set<Expense> expenses = new HashSet<>();
+    @Getter
+    @Setter
+    private String name;
 
-	@Getter
-	@Setter
-	private Set<Income> incomes = new HashSet<>();
+    @Getter
+    @Setter
+    private Set<Permission> permissions = new HashSet<>();
 
-	@Getter
-	@Setter
-	private double balance;
+    @Getter
+    @Setter
+    private Set<Expense> expenses = new HashSet<>();
 
-	@Getter
-	@Setter
-	private double plannedAmount;
+    @Getter
+    @Setter
+    private Set<Income> incomes = new HashSet<>();
 
-	@Getter
-	@Setter
-	private Date dateFrom;
+    @Getter
+    @Setter
+    private double balance;
 
-	@Getter
-	@Setter
-	private Date dateTo;
-        
-        public Budget(){
-            this.id = UUID.randomUUID();
-        }
-        
-        public Budget(String name, double balance,double plannedAmount, Date dateFrom, Date dateTo){
-            this.name=name;
-            this.balance=balance;
-            this.plannedAmount=plannedAmount;
-            this.dateFrom=dateFrom;
-            this.dateTo=dateTo;
-            this.id = UUID.randomUUID();
-        }
+    @Getter
+    @Setter
+    private double plannedAmount;
+
+    @Getter
+    @Setter
+    private Date dateFrom;
+
+    @Getter
+    @Setter
+    private Date dateTo;
+
+
+    public Budget() {
+        this.id = UUID.randomUUID();
+    }
+
+
+    public Budget(String name, double balance, double plannedAmount, Date dateFrom, Date dateTo) {
+        this.name = name;
+        this.balance = balance;
+        this.plannedAmount = plannedAmount;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.id = UUID.randomUUID();
+    }
 }
