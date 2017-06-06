@@ -9,13 +9,19 @@ import org.springframework.data.annotation.Id;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "Budget")
 public class Budget {
 
 	@Id
 	@Getter
+        @Setter
 	private UUID id;
-
+        
+        @Getter
+	@Setter
+        private String name;
 	@Getter
 	@Setter
 	private Set<Permission> permissions = new HashSet<>();
@@ -43,4 +49,17 @@ public class Budget {
 	@Getter
 	@Setter
 	private Date dateTo;
+        
+        public Budget(){
+            this.id = UUID.randomUUID();
+        }
+        
+        public Budget(String name, double balance,double plannedAmount, Date dateFrom, Date dateTo){
+            this.name=name;
+            this.balance=balance;
+            this.plannedAmount=plannedAmount;
+            this.dateFrom=dateFrom;
+            this.dateTo=dateTo;
+            this.id = UUID.randomUUID();
+        }
 }

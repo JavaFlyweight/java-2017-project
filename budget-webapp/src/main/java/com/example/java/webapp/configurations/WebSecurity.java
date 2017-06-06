@@ -17,6 +17,7 @@ import com.example.java.commons.enums.SecurityRoles;
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
+
     @Autowired
     UserDetailsService userDetailsService;
 

@@ -1,17 +1,27 @@
 package com.example.java.application.services;
 
+import com.example.java.commons.enums.PermissionType;
 import java.util.List;
 import java.util.UUID;
-
 import com.example.java.domain.model.Budget;
+import com.example.java.domain.model.BudgetCreateRequest;
+import com.example.java.domain.model.BudgetEditRequest;
 
 public interface BudgetService {
 
-	public Budget getOneBudgetEntity(UUID budgetId);
+    public Budget getOneById(UUID budgetId, PermissionType... permissionTypes);
 
-	public Budget saveBudgetEntity(Budget budget);
+    public Budget createBudgetEntity(BudgetCreateRequest dataToCreateBudget);
+    
+    public Budget getOneByUserLoginAndOwner();
 
-	public Budget getOneByUserIdAndOwner(UUID userID);
+    public List<Budget> getSharedBudgets();
 
-	public List<Budget> getSharedBudgets(UUID userID);
+    public Budget editBudgetEntity(UUID budgetId, BudgetEditRequest dataToEditBudget);
+    
+    public void deleteBudgetEntity(UUID budgetId);
+
+    public Budget shareBudget(UUID budgetId, String userLogin, PermissionType permissionType);
+    
+    public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision);
 }
