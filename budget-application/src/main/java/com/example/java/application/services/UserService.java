@@ -14,4 +14,6 @@ public interface UserService {
 	public User getUser(String email);
 
 	public boolean isUserExist(String email);
+        
+        public String getLoggedUserLogin();
 }
