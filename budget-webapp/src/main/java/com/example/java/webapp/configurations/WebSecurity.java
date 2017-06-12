@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.example.java.commons.enums.SecurityRoles;
@@ -21,44 +22,52 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	UserDetailsService userDetailsService;
+    private static String REALM = "MY_TEST_REALM";
 
-	@Override
-	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService);
-	}
+    @Autowired
+    UserDetailsService userDetailsService;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		setUserServicePermission(http);				
-	}
 
-	private void setUserServicePermission(HttpSecurity http) throws Exception {
-		List<String> permission = new ArrayList<>();
-		permission.add(SecurityRoles.USER.toString());
-		permission.add(SecurityRoles.ADMIN.toString());
-		permission.add(SecurityRoles.SERVICE.toString());
-		
-		http
-		.httpBasic().and()
-	      .authorizeRequests()
-	        .antMatchers("/user/**").hasAnyRole(permission.toArray(new String[permission.size()])).and()
-	      .formLogin()
-          .loginPage("/login").permitAll()
-          .and()
-          .logout().permitAll().and().csrf().disable().cors();
-	}
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
-	@Bean
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        setUserServicePermission(http);
+    }
+
+
+    private void setUserServicePermission(HttpSecurity http) throws Exception {
+        List<String> permission = new ArrayList<>();
+        permission.add(SecurityRoles.USER.toString());
+        permission.add(SecurityRoles.ADMIN.toString());
+        permission.add(SecurityRoles.SERVICE.toString());
+
+        http.csrf().disable().authorizeRequests().antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()])).antMatchers("/income/**")
+                .hasAnyRole(permission.toArray(new String[permission.size()])).and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    }
+
+
+    @Bean
     CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOrigin("*");
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		return source;
-	}
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+
+    @Bean
+    public CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
+        return new CustomBasicAuthenticationEntryPoint();
+    }
 }
