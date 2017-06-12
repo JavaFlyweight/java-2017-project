@@ -3,12 +3,12 @@ package com.example.java.application.services;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.FinancialOperation;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface FinancialOperationService {
 
-    public List getAllFinancialOperationTypes();
+    public Map getAllFinancialOperationTypes();
 
     public Budget addNewFinancialOperation(UUID budgetId, FinancialOperation financialOperationToAdd);
 

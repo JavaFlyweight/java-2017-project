@@ -2,11 +2,12 @@ package com.example.java.webapp.endpoints;
 
 import com.example.java.application.services.FinancialOperationService;
 import com.example.java.commons.enums.ExpenseType;
+import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class ExpenseController {
     private FinancialOperationService expenseService;
 
     @RequestMapping(value = "/getAllTypes", method = RequestMethod.GET)
-    public List<ExpenseType> getAllExpenseTypes() {
+    public Map<ExpenseType, String> getAllExpenseTypes() {
         LOGGER.info("Start getAllExpenseTypes");
         return expenseService.getAllFinancialOperationTypes();
     }
