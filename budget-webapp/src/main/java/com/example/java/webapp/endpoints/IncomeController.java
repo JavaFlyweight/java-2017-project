@@ -6,7 +6,7 @@ import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Income;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class IncomeController {
     private FinancialOperationService incomeService;
 
     @RequestMapping(value = "/getAllTypes", method = RequestMethod.GET)
-    public List<IncomeType> getAllIncomeTypes() {
+    public Map<IncomeType, String> getAllIncomeTypes() {
         LOGGER.info("Start getAllIncomeTypes");
         return incomeService.getAllFinancialOperationTypes();
     }
