@@ -46,8 +46,15 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         permission.add(SecurityRoles.ADMIN.toString());
         permission.add(SecurityRoles.SERVICE.toString());
 
-        http.csrf().disable().authorizeRequests().antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()])).antMatchers("/income/**")
-                .hasAnyRole(permission.toArray(new String[permission.size()])).and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()).and().sessionManagement()
+        http
+                .csrf().disable()
+                .cors().and()
+                .authorizeRequests()
+                .antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+                .antMatchers("/income/**")
+                .hasAnyRole(permission.toArray(new String[permission.size()]))
+                .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
+                .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     }
