@@ -50,16 +50,21 @@ public class Budget {
 	@Setter
 	private Date dateTo;
         
+        @Getter
+	@Setter
+        private String image;
+        
         public Budget(){
             this.id = UUID.randomUUID();
         }
         
-        public Budget(String name, double balance,double plannedAmount, Date dateFrom, Date dateTo){
+        public Budget(String name, double balance,double plannedAmount, Date dateFrom, Date dateTo, String image){
             this.name=name;
             this.balance=balance;
             this.plannedAmount=plannedAmount;
             this.dateFrom=dateFrom;
             this.dateTo=dateTo;
             this.id = UUID.randomUUID();
+            this.image=image;
         }
 }

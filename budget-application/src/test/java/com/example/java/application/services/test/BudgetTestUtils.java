@@ -25,7 +25,7 @@ public class BudgetTestUtils {
     public static Budget createOneBudgetEntityByIdWithPermission(String userLogin, PermissionType permissionType) {
         Date date = new Date();
         date.setTime(new Date().getTime() + 11 * 23 * 60 * 60 * 1000);
-        final Budget createdBudget = new Budget("Rodzinny", 12.03, 1234.76, new Date(), date);
+        final Budget createdBudget = new Budget("Rodzinny", 12.03, 1234.76, new Date(), date, null);
         Set<Permission> permissions = new HashSet<>();
         permissions.add(new Permission(userLogin, permissionType));
         createdBudget.setPermissions(permissions);
@@ -50,7 +50,7 @@ public class BudgetTestUtils {
         date.setTime(new Date().getTime() + 11 * 24 * 60 * 3 * 60 * 1000);
         Date date2 = new Date();
         date2.setTime(new Date().getTime() + 22 * 24 * 60 * 60 * 1000);
-        final BudgetEditRequest dataToEdit = new BudgetEditRequest("Rodzinny", 4321.76, date, date2);
+        final BudgetEditRequest dataToEdit = new BudgetEditRequest("Rodzinny", 4321.76, date, date2, null);
         return dataToEdit;
     }
 
@@ -65,7 +65,7 @@ public class BudgetTestUtils {
     public static Budget createBudgetEntityForTestExpensesAndIncome(String userLogin) {
         Date date = new Date();
         date.setTime(new Date().getTime() + 11 * 24 * 60 * 60 * 1000);
-        final Budget createdBudget = new Budget("Rodzinny", 12.03, 1234.76, new Date(), date);
+        final Budget createdBudget = new Budget("Rodzinny", 12.03, 1234.76, new Date(), date, null);
         Set<Permission> permissions = new HashSet<>();
         permissions.add(new Permission(userLogin, PermissionType.OWNER));
         createdBudget.setPermissions(permissions);

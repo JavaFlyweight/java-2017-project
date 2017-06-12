@@ -24,6 +24,7 @@ public class UserController {
 	private static final String EMAIL = "email";
 	private static final String LAST_NAME = "lastName";
 	private static final String NAME = "name";
+        private static final String IMAGE = "image";
 	
 	@Autowired
 	private UserService userService;
@@ -34,8 +35,9 @@ public class UserController {
 		String lastName = requestParams.get(LAST_NAME);
 		String email = requestParams.get(EMAIL);
 		String password = requestParams.get(PASSWORD);
-		
-		UUID newUserId = userService.registerUser(name, lastName, email, password);
+		String image = requestParams.get(IMAGE);
+                
+		UUID newUserId = userService.registerUser(name, lastName, email, password, image);
 		
 		HashMap<String, UUID> response = new HashMap<>();
 		response.put("id", newUserId);

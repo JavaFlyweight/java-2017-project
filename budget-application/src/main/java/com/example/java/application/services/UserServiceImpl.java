@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UUID registerUser(String name, String lastName, String email, String password) {
+    public UUID registerUser(String name, String lastName, String email, String password, String image) {
         if (name.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
             // TODO Must throw custom exception (isEmpty or ==null??).
         }
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
             // TODO Must throw user alredy exist exception.
         }
 
-        User newUser = userRepository.save(new User(name, lastName, email, password));
+        User newUser = userRepository.save(new User(name, lastName, email, password, image));
 
         return newUser.getId();
     }

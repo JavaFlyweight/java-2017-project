@@ -25,4 +25,8 @@ public class BudgetEditRequest {
 	@Getter
 	@Setter
 	protected Date dateTo;
+        
+        @Getter
+	@Setter
+        private String image;
 }

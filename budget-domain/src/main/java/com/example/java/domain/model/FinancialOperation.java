@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Operation {
+public abstract class FinancialOperation {
 	
 	@Getter
 	@Setter

@@ -53,7 +53,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public Budget createBudgetEntity(BudgetCreateRequest dataToCreateBudget) {
-        Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo());
+        Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo(), dataToCreateBudget.getImage());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
         permissions.add(new Permission(userLogin, PermissionType.OWNER));
@@ -93,6 +93,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
         budgetToEdit.setDateTo(dataToEditBudget.getDateTo());
         budgetToEdit.setName(dataToEditBudget.getName());
+        budgetToEdit.setImage(dataToEditBudget.getImage());
         return budgetRepository.save(budgetToEdit);
     }
 

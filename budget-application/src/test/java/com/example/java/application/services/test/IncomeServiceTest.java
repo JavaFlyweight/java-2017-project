@@ -1,7 +1,7 @@
 package com.example.java.application.services.test;
 
 import com.example.java.application.services.BudgetService;
-import com.example.java.application.services.IncomeService;
+import com.example.java.application.services.FinancialOperationService;
 import com.example.java.application.services.IncomeServiceimpl;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
@@ -33,7 +33,7 @@ public class IncomeServiceTest {
     private BudgetService budgetService;
 
     @InjectMocks
-    private final IncomeService incomeService = new IncomeServiceimpl();
+    private final FinancialOperationService incomeService = new IncomeServiceimpl();
 
     private static final UUID BUDGET_ID = UUID.randomUUID();
     private static final String USER_LOGIN = "abc@wp.pl";
@@ -42,7 +42,7 @@ public class IncomeServiceTest {
     public void shouldAddNewIncome_BugdetsSholdBeTheSame() {
         final Income incomeToAdd = new Income("Premia", 1200.0, UUID.randomUUID(), IncomeType.PREMIUM, new Date());
         final Budget budgetFromRepository = stubRepositoryToAddNewIncome(incomeToAdd);
-        final Budget returnedBudget = incomeService.addNewIncome(BUDGET_ID, incomeToAdd);
+        final Budget returnedBudget = incomeService.addNewFinancialOperation(BUDGET_ID, incomeToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -53,7 +53,7 @@ public class IncomeServiceTest {
     public void shouldAddNewIncome_IncomeSetShouldCorectSize() {
         final Income incomeToAdd = new Income("Premia", 1200.0, UUID.randomUUID(), IncomeType.PREMIUM, new Date());
         stubRepositoryToAddNewIncome(incomeToAdd);
-        final Budget returnedBudget = incomeService.addNewIncome(BUDGET_ID, incomeToAdd);
+        final Budget returnedBudget = incomeService.addNewFinancialOperation(BUDGET_ID, incomeToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -64,7 +64,7 @@ public class IncomeServiceTest {
     public void shouldDeleteIncome_BugdetsSholdBeTheSame() {
         final Income incomeToAdd = new Income("Premia", 1200.0, UUID.randomUUID(), IncomeType.PREMIUM, new Date());
         final Budget budgetFromRepository = stubRepositoryToDeleteIncome(incomeToAdd);
-        final Budget returnedBudget = incomeService.deleteIncome(BUDGET_ID, incomeToAdd);
+        final Budget returnedBudget = incomeService.deleteFinancialOperation(BUDGET_ID, incomeToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -75,7 +75,7 @@ public class IncomeServiceTest {
     public void shouldDeleteIncome_IncomeSetShouldCorectSize() {
        final Income incomeToAdd = new Income("Premia", 1200.0, UUID.randomUUID(), IncomeType.PREMIUM, new Date());
         stubRepositoryToDeleteIncome(incomeToAdd);
-        final Budget returnedBudget = incomeService.deleteIncome(BUDGET_ID, incomeToAdd);
+        final Budget returnedBudget = incomeService.deleteFinancialOperation(BUDGET_ID, incomeToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
