@@ -1,8 +1,8 @@
 package com.example.java.application.services.test;
 
 import com.example.java.application.services.BudgetService;
-import com.example.java.application.services.ExpenseService;
 import com.example.java.application.services.ExpenseServiceimpl;
+import com.example.java.application.services.FinancialOperationService;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
@@ -33,7 +33,7 @@ public class ExpenseServiceTest {
     private BudgetService budgetService;
 
     @InjectMocks
-    private final ExpenseService expenseService = new ExpenseServiceimpl();
+    private final FinancialOperationService expenseService = new ExpenseServiceimpl();
 
     private static final UUID BUDGET_ID = UUID.randomUUID();
     private static final String USER_LOGIN = "abc@wp.pl";
@@ -42,7 +42,7 @@ public class ExpenseServiceTest {
     public void shouldAddNewExpense_BugdetsSholdBeTheSame() {
         final Expense expenseToAdd = new Expense("Lekarz", 150.0, null, ExpenseType.HEALTHCARE, new Date());
         final Budget budgetFromRepository = stubRepositoryToAddNewExpense(expenseToAdd);
-        final Budget returnedBudget = expenseService.addNewExpense(BUDGET_ID, expenseToAdd);
+        final Budget returnedBudget = expenseService.addNewFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -53,7 +53,7 @@ public class ExpenseServiceTest {
     public void shouldAddNewExpense_ExpenseSetShouldCorectSize() {
         final Expense expenseToAdd = new Expense("Lekarz", 150.0, null, ExpenseType.HEALTHCARE, new Date());
         stubRepositoryToAddNewExpense(expenseToAdd);
-        final Budget returnedBudget = expenseService.addNewExpense(BUDGET_ID, expenseToAdd);
+        final Budget returnedBudget = expenseService.addNewFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -64,7 +64,7 @@ public class ExpenseServiceTest {
     public void shouldDeleteExpense_BugdetsSholdBeTheSame() {
         final Expense expenseToAdd = new Expense("Lekarz", 150.0, UUID.randomUUID(), ExpenseType.HEALTHCARE, new Date());
         final Budget budgetFromRepository = stubRepositoryToDeleteExpense(expenseToAdd);
-        final Budget returnedBudget = expenseService.deleteExpense(BUDGET_ID, expenseToAdd);
+        final Budget returnedBudget = expenseService.deleteFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
@@ -75,7 +75,7 @@ public class ExpenseServiceTest {
     public void shouldDeleteExpense_ExpenseSetShouldCorectSize() {
         final Expense expenseToAdd = new Expense("Lekarz", 150.0, UUID.randomUUID(), ExpenseType.HEALTHCARE, new Date());
         stubRepositoryToDeleteExpense(expenseToAdd);
-        final Budget returnedBudget = expenseService.deleteExpense(BUDGET_ID, expenseToAdd);
+        final Budget returnedBudget = expenseService.deleteFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);

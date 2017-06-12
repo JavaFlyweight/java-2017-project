@@ -34,13 +34,18 @@ public class User {
 	
 	@Getter
 	private String userRole;
+        
+        @Getter
+	@Setter
+        private String image;
 
-	public User(String name, String lastName, String email, String password) {
+	public User(String name, String lastName, String email, String password, String image) {
 		this.id = UUID.randomUUID();
 		this.name = name;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
 		this.userRole = SecurityRoles.USER.getAsRoleName();
+                this.image=image;
 	}
 }

@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.example.java.domain.model.User;
 
 public interface UserService {
-	public UUID registerUser(String name, String lastName, String email, String password);
+	public UUID registerUser(String name, String lastName, String email, String password, String image);
 
 	public void validateCredentials(String email, String password);
 

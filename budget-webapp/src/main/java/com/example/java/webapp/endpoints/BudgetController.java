@@ -60,14 +60,14 @@ public class BudgetController {
         return budgetService.getSharedBudgets();
     }
 
-    @RequestMapping(value = "/edit", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/edit", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Budget editBudgetEntity(@RequestParam UUID budgetId, @RequestBody BudgetEditRequest dataToEditBudget) {
         LOGGER.info("Start editBudgetEntity {} {} {} {} ", new Object[]{budgetId, dataToEditBudget.getPlannedAmount(), dataToEditBudget.getDateFrom(), dataToEditBudget.getDateTo()});
         return budgetService.editBudgetEntity(budgetId, dataToEditBudget);
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBudgetEntity(@RequestParam UUID budgetId) {
         LOGGER.info("Start deleteBudgetEntity with budgetId {} ", new Object[]{budgetId});
         budgetService.deleteBudgetEntity(budgetId);
