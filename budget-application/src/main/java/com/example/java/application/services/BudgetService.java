@@ -15,6 +15,8 @@ public interface BudgetService {
     
     public Budget getOneByUserLoginAndOwner();
 
+    public List<Budget> getAllByUserLoginAndOwner();
+
     public List<Budget> getSharedBudgets();
 
     public Budget editBudgetEntity(UUID budgetId, BudgetEditRequest dataToEditBudget);

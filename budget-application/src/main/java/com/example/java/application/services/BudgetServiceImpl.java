@@ -73,8 +73,8 @@ public class BudgetServiceImpl implements BudgetService {
         return allBudgetByUserLoginAndOwner.get(0);
     }
 
-
-    private List<Budget> getAllByUserLoginAndOwner() {
+    @Override
+    public List<Budget> getAllByUserLoginAndOwner() {
         String userLogin = userService.getLoggedUserLogin();
         List<Budget> foundBudgets = budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.OWNER);
         return foundBudgets;
