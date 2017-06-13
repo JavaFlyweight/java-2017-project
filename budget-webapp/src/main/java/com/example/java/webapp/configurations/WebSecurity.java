@@ -6,17 +6,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import com.example.java.commons.enums.SecurityRoles;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.example.java.commons.enums.SecurityRoles;
 
 @Configuration
 @EnableWebSecurity
@@ -46,16 +47,20 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         permission.add(SecurityRoles.ADMIN.toString());
         permission.add(SecurityRoles.SERVICE.toString());
 
+        // @formatter:off
         http
-                .csrf().disable()
-                .cors().and()
-                .authorizeRequests()
-                .antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()]))
-                .antMatchers("/income/**")
-                .hasAnyRole(permission.toArray(new String[permission.size()]))
-                .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            .csrf().disable()
+            .cors().and()
+            .authorizeRequests()
+            .antMatchers("/budget/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+            .antMatchers("/income/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+            .antMatchers(HttpMethod.PUT, "/user/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+            .antMatchers(HttpMethod.GET, "/user/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+            .antMatchers(HttpMethod.DELETE, "/user/**").hasAnyRole(permission.toArray(new String[permission.size()]))
+            .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
+            .and().sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        // @formatter:on
 
     }
 

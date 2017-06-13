@@ -1,30 +1,29 @@
 package com.example.java.application.services;
 
+import static com.example.java.application.services.UtilsService.checkPermissionForBudget;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.commons.exceptions.BudgetNotFoundException;
-import com.example.java.domain.model.Budget;
-import com.example.java.domain.model.Permission;
-import com.example.java.repository.BudgetRepository;
-import java.util.HashSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.example.java.application.services.UtilsService.checkPermissionForBudget;
 import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
 import com.example.java.commons.exceptions.PermissionNotFoundException;
 import com.example.java.commons.exceptions.WrongPermissionTypeException;
+import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.BudgetCreateRequest;
 import com.example.java.domain.model.BudgetEditRequest;
-import java.util.Iterator;
+import com.example.java.domain.model.Permission;
+import com.example.java.repository.BudgetRepository;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
@@ -36,6 +35,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Autowired
     private UserService userService;
+
 
     @Override
     public Budget getOneById(UUID budgetId, PermissionType... permissionTypes) {
@@ -51,15 +51,18 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetToReturn;
     }
 
+
     @Override
     public Budget createBudgetEntity(BudgetCreateRequest dataToCreateBudget) {
-        Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(), dataToCreateBudget.getDateTo(), dataToCreateBudget.getImage());
+        Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(),
+                dataToCreateBudget.getDateTo(), dataToCreateBudget.getImage());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
         permissions.add(new Permission(userLogin, PermissionType.OWNER));
         budgetToSave.setPermissions(permissions);
         return budgetRepository.save(budgetToSave);
     }
+
 
     @Override
     public Budget getOneByUserLoginAndOwner() {
@@ -70,11 +73,13 @@ public class BudgetServiceImpl implements BudgetService {
         return allBudgetByUserLoginAndOwner.get(0);
     }
 
+
     private List<Budget> getAllByUserLoginAndOwner() {
         String userLogin = userService.getLoggedUserLogin();
         List<Budget> foundBudgets = budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.OWNER);
         return foundBudgets;
     }
+
 
     @Override
     public List<Budget> getSharedBudgets() {
@@ -85,6 +90,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         return result;
     }
+
 
     @Override
     public Budget editBudgetEntity(UUID budgetId, BudgetEditRequest dataToEditBudget) {
@@ -97,11 +103,13 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetRepository.save(budgetToEdit);
     }
 
+
     @Override
     public void deleteBudgetEntity(UUID budgetId) {
         Budget budgetToDelete = getOneById(budgetId, PermissionType.OWNER);
         budgetRepository.delete(budgetToDelete);
     }
+
 
     @Override
     public Budget shareBudget(UUID budgetId, String userLoginWithWillGetPermission, PermissionType permissionType) {
@@ -126,6 +134,7 @@ public class BudgetServiceImpl implements BudgetService {
         budgetToShare.setPermissions(permissions);
         return budgetRepository.save(budgetToShare);
     }
+
 
     @Override
     public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision) {
