@@ -49,9 +49,9 @@ public class BudgetController {
     }
 
     @RequestMapping(value = "/getMy", method = RequestMethod.GET)
-    public ResponseEntity<Budget> getByUserLoginAndOwner() {
+    public ResponseEntity<List<Budget>> getByUserLoginAndOwner() {
         LOGGER.info("Start getAllByUserIdAndOwner ");
-        return new ResponseEntity<>(budgetService.getOneByUserLoginAndOwner(), HttpStatus.OK);
+        return new ResponseEntity<>(budgetService.getAllByUserLoginAndOwner(), HttpStatus.OK); 
     }
 
     @RequestMapping(value = "/getShared", method = RequestMethod.GET)
