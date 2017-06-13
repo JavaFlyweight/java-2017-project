@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(email);
         }
 
-        //validateCredentials(user, password);
+        validateCredentials(user, password);
 
         return user;
     }
