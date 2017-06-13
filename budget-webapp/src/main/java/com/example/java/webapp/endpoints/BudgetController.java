@@ -49,9 +49,9 @@ public class BudgetController {
     }
 
     @RequestMapping(value = "/getMy", method = RequestMethod.GET)
-    public Budget getByUserLoginAndOwner() {
+    public List<Budget> getByUserLoginAndOwner() {
         LOGGER.info("Start getAllByUserIdAndOwner ");
-        return budgetService.getOneByUserLoginAndOwner();
+        return budgetService.getAllByUserLoginAndOwner();
     }
 
     @RequestMapping(value = "/getShared", method = RequestMethod.GET)
