@@ -19,6 +19,8 @@ import com.example.java.application.services.ReportService;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.http.UrlPathHelper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @Controller
@@ -30,22 +32,22 @@ public class ReportController {
 	private ReportService reportService;
 
 	@RequestMapping(value = "/getExpensesToView", method = RequestMethod.GET)
-	public Map<ExpenseType, Double> getSumsExpensesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
+	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
 			@RequestParam Date dateTo) {
 		LOGGER.debug("Start getSumsExpensesPerType with budgetId {0}", new Object[] { budgetId });
-		return reportService.getAllSumsExpensesPerType(budgetId, dateFrom, dateTo);
+		return new ResponseEntity<>(reportService.getAllSumsExpensesPerType(budgetId, dateFrom, dateTo), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getIncomesToView", method = RequestMethod.GET)
-	public Map<IncomeType, Double> getSumsIncomesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
+	public ResponseEntity<Map<IncomeType, Double>> getSumsIncomesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
 			@RequestParam Date dateTo) {
 		LOGGER.debug("Start getSumsIncomesPerType with budgetId {0}", new Object[] { budgetId });
-		return reportService.getAllSumsIncomesPerType(budgetId, dateFrom, dateTo);
+		return new ResponseEntity<>(reportService.getAllSumsIncomesPerType(budgetId, dateFrom, dateTo), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getDailyLimitToView", method = RequestMethod.GET)
-	public BigDecimal getDailyLimit(@RequestParam UUID budgetId) {
+	public ResponseEntity<BigDecimal> getDailyLimit(@RequestParam UUID budgetId) {
 		LOGGER.debug("Start getDailyLimit with budgetId {0}", new Object[] { budgetId });
-		return reportService.getDailyLimit(budgetId);
+		return new ResponseEntity<>(reportService.getDailyLimit(budgetId), HttpStatus.OK);
 	}
 }
