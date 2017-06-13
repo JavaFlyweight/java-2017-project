@@ -1,6 +1,8 @@
 package com.example.java.commons.enums;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import lombok.Getter;
@@ -8,8 +10,8 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum IncomeType {
+
+public enum IncomeType implements FinancialOperationType {
     SALARY(), PREMIUM(), PRIZE(), GIFT(), SHARES(), OTHER();
 
     @Getter

@@ -1,19 +1,14 @@
 package com.example.java.application.services;
 
 import com.example.java.commons.enums.ExpenseType;
-import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
 import com.example.java.domain.model.FinancialOperation;
 import com.example.java.repository.BudgetRepository;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,12 +22,8 @@ public class ExpenseServiceimpl implements FinancialOperationService {
     private BudgetService budgetService;
 
     @Override
-    public Map<ExpenseType,String> getAllFinancialOperationTypes() {
-    Map<ExpenseType, String> expenseTypesMap = new HashMap<>();
-        for (ExpenseType expenseType : ExpenseType.values()) {
-            expenseTypesMap.put(expenseType, expenseType.getImage());
-        }
-        return expenseTypesMap;
+    public ExpenseType [] getAllFinancialOperationTypes() { 
+        return ExpenseType.values();
     }
 
     @Override

@@ -7,8 +7,6 @@ import com.example.java.domain.model.FinancialOperation;
 import com.example.java.domain.model.Income;
 import com.example.java.repository.BudgetRepository;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +22,8 @@ public class IncomeServiceimpl implements FinancialOperationService {
     private BudgetService budgetService;
 
     @Override
-    public Map<IncomeType, String> getAllFinancialOperationTypes() {
-        Map<IncomeType, String> incomeTypesMap = new HashMap<>();
-        for (IncomeType incomeType : IncomeType.values()) {
-            incomeTypesMap.put(incomeType, incomeType.getImage());
-        }
-        return incomeTypesMap;
+    public IncomeType[] getAllFinancialOperationTypes() {
+        return IncomeType.values();
     }
 
     @Override

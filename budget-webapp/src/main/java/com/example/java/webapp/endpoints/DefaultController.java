@@ -13,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.example.java.commons.enums.ViewTemplatesResolver;
 import com.example.java.commons.http.UrlPathHelper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 public class DefaultController {
@@ -22,31 +24,31 @@ public class DefaultController {
 	private static final String REDIRECT = "redirect:";
 
 	@RequestMapping(value = UrlPathHelper.LOGOUT, method = RequestMethod.GET)
-	public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<String> logoutPage(HttpServletRequest request, HttpServletResponse response) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (auth != null) {
 			new SecurityContextLogoutHandler().logout(request, response, auth);
 		}
 
-		return REDIRECT + UrlPathHelper.INDEX;
+		return new ResponseEntity<>(REDIRECT + UrlPathHelper.INDEX, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = UrlPathHelper.INDEX, method = RequestMethod.GET)
-	public ModelAndView indexPage(HttpServletRequest request) {
+	public ResponseEntity<ModelAndView> indexPage(HttpServletRequest request) {
 		ModelAndView modelAndView = new ModelAndView(ViewTemplatesResolver.INDEX.toString());	
 		
 		if (request.getRemoteUser() != null) {
 			modelAndView.addObject(USER_NAME, request.getRemoteUser());			
 		}
 				
-		return modelAndView;
+		return new ResponseEntity<>(modelAndView, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = UrlPathHelper.LOGIN, method = RequestMethod.GET)
-	public ModelAndView loginPage() {
+	public ResponseEntity<ModelAndView> loginPage() {
 		ModelAndView modelAndView = new ModelAndView(ViewTemplatesResolver.LOGIN.toString());
 		
-		return modelAndView;
+		return new ResponseEntity<>(modelAndView, HttpStatus.OK);
 	}
 }

@@ -1,12 +1,11 @@
 package com.example.java.webapp.endpoints;
 
 import com.example.java.application.services.FinancialOperationService;
-import com.example.java.commons.enums.IncomeType;
+import com.example.java.commons.enums.FinancialOperationType;
 import com.example.java.commons.http.UrlPathHelper;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Income;
 import java.util.Date;
-import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,27 +34,27 @@ public class IncomeController {
     private FinancialOperationService incomeService;
 
     @RequestMapping(value = "/getAllTypes", method = RequestMethod.GET)
-    public Map<IncomeType, String> getAllIncomeTypes() {
+    public ResponseEntity<FinancialOperationType[]> getAllIncomeTypes() {
         LOGGER.info("Start getAllIncomeTypes");
-        return incomeService.getAllFinancialOperationTypes();
+        return new ResponseEntity<>(incomeService.getAllFinancialOperationTypes(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Budget addNewIncome(@RequestParam UUID budgetId, @RequestBody Income income) {
+    public ResponseEntity<Budget> addNewIncome(@RequestParam UUID budgetId, @RequestBody Income income) {
         LOGGER.info("Start addNewIncome with budgetId {}", new Object[]{budgetId});
-        return incomeService.addNewFinancialOperation(budgetId, income);
+        return new ResponseEntity<>(incomeService.addNewFinancialOperation(budgetId, income), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public Budget deleteIncome(@RequestParam UUID budgetId, @RequestBody Income income) {
+    public ResponseEntity<Budget> deleteIncome(@RequestParam UUID budgetId, @RequestBody Income income) {
         LOGGER.info("Start deleteIncome with budgetId {}", new Object[]{budgetId});
-        return incomeService.deleteFinancialOperation(budgetId, income);
+        return new ResponseEntity<>(incomeService.deleteFinancialOperation(budgetId, income), HttpStatus.OK);
     }
-    
+
     @RequestMapping(value = "/copyWithNewDate", method = RequestMethod.POST)
-    public Income copyWithNewDate( UUID budgetId, @RequestBody Income income, @RequestParam Date newDateTime) {
+    public ResponseEntity<Income> copyWithNewDate(UUID budgetId, @RequestBody Income income, @RequestParam Date newDateTime) {
         LOGGER.info("Start copyWithNewDate with newDateTime {}", new Object[]{newDateTime});
-        return (Income) incomeService.copyWithNewDate(income, newDateTime);
+        return new ResponseEntity<>((Income) incomeService.copyWithNewDate(income, newDateTime), HttpStatus.OK);
     }
 }
