@@ -46,7 +46,7 @@ public class ReportServiceImpl implements ReportService {
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
 		Map<ExpenseType, Double> allSumsExpensesPerType = new LinkedHashMap<ExpenseType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW,PermissionType.OWNER,PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Expense> expenses = budget.getExpenses();
@@ -72,7 +72,7 @@ public class ReportServiceImpl implements ReportService {
 		Map<IncomeType, Double> allSumsIncomesPerType = new LinkedHashMap<IncomeType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
 
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW,PermissionType.OWNER,PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Income> incomes = budget.getIncomes();
@@ -96,11 +96,19 @@ public class ReportServiceImpl implements ReportService {
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
 		Budget budget = budgetRepository.findOneById(budgetId);
 		BigDecimal dailyLimit;
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW, PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
-			long numberOfDays = ((budget.getDateTo().getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24) + 1;
-			dailyLimit = new BigDecimal(budget.getBalance() / numberOfDays);
+			Date startDate = new Date();
+			if (startDate.before(budget.getDateFrom())) {
+				startDate = budget.getDateFrom();
+			}
+			if (budget.getDateTo().before(new Date())) {
+				dailyLimit = new BigDecimal(0);
+			} else {
+				long numberOfDays = ((budget.getDateTo().getTime() - startDate.getTime()) / 1000 / 60 / 60 / 24) + 1;
+				dailyLimit = new BigDecimal(budget.getBalance() / numberOfDays);
+			}
 		}
 		return dailyLimit.setScale(2, RoundingMode.DOWN);
 	}

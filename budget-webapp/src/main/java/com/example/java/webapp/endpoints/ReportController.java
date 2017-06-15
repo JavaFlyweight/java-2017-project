@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,8 @@ public class ReportController {
 	private ReportService reportService;
 
 	@RequestMapping(value = "/getExpensesToView", method = RequestMethod.GET)
-	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
-			@RequestParam Date dateTo) {
+	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date dateFrom,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date dateTo) {
 		LOGGER.debug("Start getSumsExpensesPerType with budgetId {0}", new Object[] { budgetId });
 		return new ResponseEntity<>(reportService.getAllSumsExpensesPerType(budgetId, dateFrom, dateTo), HttpStatus.OK);
 	}
