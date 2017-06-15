@@ -1,6 +1,7 @@
 package com.example.java.webapp.endpoints;
 
 import java.math.BigDecimal;
+import java.security.Timestamp;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -33,19 +34,23 @@ public class ReportController {
 	private ReportService reportService;
 
 	@RequestMapping(value = "/getExpensesToView", method = RequestMethod.GET)
-	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date dateFrom,
-			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date dateTo) {
+	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId,
+			@RequestParam String dateFrom, @RequestParam String dateTo) {
 		LOGGER.debug("Start getSumsExpensesPerType with budgetId {0}", new Object[] { budgetId });
-		return new ResponseEntity<>(reportService.getAllSumsExpensesPerType(budgetId, dateFrom, dateTo), HttpStatus.OK);
+		Date from = new Date(Long.parseLong(dateFrom));
+		Date to = new Date(Long.parseLong(dateTo));
+		return new ResponseEntity<>(reportService.getAllSumsExpensesPerType(budgetId, from, to), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getIncomesToView", method = RequestMethod.GET)
-	public ResponseEntity<Map<IncomeType, Double>> getSumsIncomesPerType(@RequestParam UUID budgetId, @RequestParam Date dateFrom,
-			@RequestParam Date dateTo) {
+	public ResponseEntity<Map<IncomeType, Double>> getSumsIncomesPerType(@RequestParam UUID budgetId,
+			@RequestParam String dateFrom, @RequestParam String dateTo) {
 		LOGGER.debug("Start getSumsIncomesPerType with budgetId {0}", new Object[] { budgetId });
-		return new ResponseEntity<>(reportService.getAllSumsIncomesPerType(budgetId, dateFrom, dateTo), HttpStatus.OK);
+		Date from = new Date(Long.parseLong(dateFrom));
+		Date to = new Date(Long.parseLong(dateTo));
+		return new ResponseEntity<>(reportService.getAllSumsIncomesPerType(budgetId, from, to), HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getDailyLimitToView", method = RequestMethod.GET)
 	public ResponseEntity<BigDecimal> getDailyLimit(@RequestParam UUID budgetId) {
 		LOGGER.debug("Start getDailyLimit with budgetId {0}", new Object[] { budgetId });

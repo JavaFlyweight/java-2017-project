@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.SystemPropertyUtils;
 
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
@@ -46,7 +47,8 @@ public class ReportServiceImpl implements ReportService {
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
 		Map<ExpenseType, Double> allSumsExpensesPerType = new LinkedHashMap<ExpenseType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW,PermissionType.OWNER,PermissionType.EDIT)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW,
+				PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Expense> expenses = budget.getExpenses();
@@ -72,7 +74,8 @@ public class ReportServiceImpl implements ReportService {
 		Map<IncomeType, Double> allSumsIncomesPerType = new LinkedHashMap<IncomeType, Double>();
 		Budget budget = budgetRepository.findOneById(budgetId);
 
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.VIEW,PermissionType.OWNER,PermissionType.EDIT)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW,
+				PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Set<Income> incomes = budget.getIncomes();
@@ -96,7 +99,8 @@ public class ReportServiceImpl implements ReportService {
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
 		Budget budget = budgetRepository.findOneById(budgetId);
 		BigDecimal dailyLimit;
-		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW, PermissionType.EDIT)) {
+		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW,
+				PermissionType.EDIT)) {
 			throw new BudgetForbiddenAccessException(budgetId);
 		} else {
 			Date startDate = new Date();
