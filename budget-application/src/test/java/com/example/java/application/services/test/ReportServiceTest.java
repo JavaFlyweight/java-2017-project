@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -109,8 +110,7 @@ public class ReportServiceTest {
 		verify(budgetRepository, times(1)).findOneById(BUDGET_ID);
 	}
 	
-	
-	
+
 	@Test
 	public void shouldGetDailyLimitForBugdetById() {
 		final BigDecimal limitFromRepository = stubRepositoryToGetDailyLimit();
