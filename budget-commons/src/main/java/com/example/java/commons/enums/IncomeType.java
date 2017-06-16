@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@JsonFormat(shape= JsonFormat.Shape.OBJECT)
 public enum IncomeType implements FinancialOperationType {
     SALARY(), PREMIUM(), PRIZE(), GIFT(), SHARES(), OTHER();
 

@@ -25,7 +25,9 @@ import com.example.java.commons.enums.PermissionType;
 import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
+import com.example.java.domain.model.ExpenseReportItem;
 import com.example.java.domain.model.Income;
+import com.example.java.domain.model.IncomeReportItem;
 import com.example.java.repository.BudgetRepository;
 
 import static com.example.java.application.services.UtilsService.checkPermissionForBudget;
@@ -42,10 +44,12 @@ public class ReportServiceImpl implements ReportService {
 	private UserService userService;
 
 	@Override
-	public Map<ExpenseType, Double> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
+	public List<ExpenseReportItem> getAllSumsExpensesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		String userLogin = userService.getLoggedUserLogin();
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
-		Map<ExpenseType, Double> allSumsExpensesPerType = new LinkedHashMap<ExpenseType, Double>();
+
+		List<ExpenseReportItem> allSumsExpensesPerType = new ArrayList<>();
+
 		Budget budget = budgetRepository.findOneById(budgetId);
 		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW,
 				PermissionType.EDIT)) {
@@ -60,18 +64,19 @@ public class ReportServiceImpl implements ReportService {
 						.filter(date -> date.getDateTime().after(dateFrom) && date.getDateTime().before(dateTo))
 						.mapToDouble(item -> item.getAmount()).sum();
 
-				allSumsExpensesPerType.put(expenseType, sumExpensesOfType);
+				allSumsExpensesPerType.add(new ExpenseReportItem(expenseType, sumExpensesOfType));
 			}
-
 			return allSumsExpensesPerType;
 		}
 	}
 
 	@Override
-	public Map<IncomeType, Double> getAllSumsIncomesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
+	public List<IncomeReportItem> getAllSumsIncomesPerType(UUID budgetId, Date dateFrom, Date dateTo) {
 		String userLogin = userService.getLoggedUserLogin();
 		LOGGER.debug("Log user is  {}", new Object[] { userLogin });
-		Map<IncomeType, Double> allSumsIncomesPerType = new LinkedHashMap<IncomeType, Double>();
+
+		List<IncomeReportItem> allSumsIncomesPerType = new ArrayList<>();
+
 		Budget budget = budgetRepository.findOneById(budgetId);
 
 		if (!checkPermissionForBudget(budget, userLogin, PermissionType.OWNER, PermissionType.VIEW,
@@ -87,7 +92,7 @@ public class ReportServiceImpl implements ReportService {
 						.filter(date -> date.getDateTime().after(dateFrom) && date.getDateTime().before(dateTo))
 						.mapToDouble(item -> item.getAmount()).sum();
 
-				allSumsIncomesPerType.put(incomeType, sumIncomesOfType);
+				allSumsIncomesPerType.add(new IncomeReportItem(incomeType, sumIncomesOfType));
 			}
 			return allSumsIncomesPerType;
 		}
