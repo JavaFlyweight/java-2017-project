@@ -3,6 +3,7 @@ package com.example.java.webapp.endpoints;
 import java.math.BigDecimal;
 import java.security.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,6 +22,9 @@ import com.example.java.application.services.ReportService;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.commons.http.UrlPathHelper;
+import com.example.java.domain.model.ExpenseReportItem;
+import com.example.java.domain.model.IncomeReportItem;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,7 +38,7 @@ public class ReportController {
 	private ReportService reportService;
 
 	@RequestMapping(value = "/getExpensesToView", method = RequestMethod.GET)
-	public ResponseEntity<Map<ExpenseType, Double>> getSumsExpensesPerType(@RequestParam UUID budgetId,
+	public ResponseEntity<List<ExpenseReportItem>> getSumsExpensesPerType(@RequestParam UUID budgetId,
 			@RequestParam String dateFrom, @RequestParam String dateTo) {
 		LOGGER.debug("Start getSumsExpensesPerType with budgetId {0}", new Object[] { budgetId });
 		Date from = new Date(Long.parseLong(dateFrom));
@@ -43,7 +47,7 @@ public class ReportController {
 	}
 
 	@RequestMapping(value = "/getIncomesToView", method = RequestMethod.GET)
-	public ResponseEntity<Map<IncomeType, Double>> getSumsIncomesPerType(@RequestParam UUID budgetId,
+	public ResponseEntity<List<IncomeReportItem>> getSumsIncomesPerType(@RequestParam UUID budgetId,
 			@RequestParam String dateFrom, @RequestParam String dateTo) {
 		LOGGER.debug("Start getSumsIncomesPerType with budgetId {0}", new Object[] { budgetId });
 		Date from = new Date(Long.parseLong(dateFrom));

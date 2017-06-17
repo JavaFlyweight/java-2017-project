@@ -13,18 +13,20 @@ import org.slf4j.LoggerFactory;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.IncomeType;
 import com.example.java.domain.model.Budget;
+import com.example.java.domain.model.ExpenseReportItem;
+import com.example.java.domain.model.IncomeReportItem;
 
 public class ReportTestUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReportTestUtils.class);
 
-	public static Map<ExpenseType, Double> createReportWithExpensesForBudget() {
-		final Map<ExpenseType, Double> reportWithExpenses = new LinkedHashMap<>();
-		reportWithExpenses.put(ExpenseType.HOUSEHOLD, 30.9);
+	public static List<ExpenseReportItem> createReportWithExpensesForBudget() {
+		final List<ExpenseReportItem> reportWithExpenses = new ArrayList<>();
+		reportWithExpenses.add(new ExpenseReportItem(ExpenseType.HOUSEHOLD, 30.9));
 		List<ExpenseType> allExpenseTypes = new ArrayList<ExpenseType>(Arrays.asList(ExpenseType.values()));
 		for (ExpenseType et : allExpenseTypes) {
 			if (!et.equals(ExpenseType.HOUSEHOLD)) {
-				reportWithExpenses.put(et, 0.0);
+				reportWithExpenses.add(new ExpenseReportItem(et, 0.0));
 			}
 		}
 		return reportWithExpenses;
@@ -32,13 +34,14 @@ public class ReportTestUtils {
 	
 	
 	
-	public static Map<IncomeType, Double> createReportWithIncomesForBudget() {
-		final Map<IncomeType, Double> reportWithIncomes = new HashMap<>();
-		reportWithIncomes.put(IncomeType.PREMIUM, 1000.99);
+	public static List<IncomeReportItem> createReportWithIncomesForBudget() {
+		final List<IncomeReportItem> reportWithIncomes = new ArrayList<>();
+		reportWithIncomes.add(new IncomeReportItem(IncomeType.SALARY, 0.00));
+		reportWithIncomes.add(new IncomeReportItem(IncomeType.PREMIUM, 1000.99));
 		List<IncomeType> allIncomeTypes = new ArrayList<IncomeType>(Arrays.asList(IncomeType.values()));
 		for(IncomeType it: allIncomeTypes){
-			if(!it.equals(IncomeType.PREMIUM)){
-				reportWithIncomes.put(it, 0.0);
+			if(!it.equals(IncomeType.PREMIUM) && !it.equals(IncomeType.SALARY)){
+				reportWithIncomes.add(new IncomeReportItem(it, 0.0));
 			}
 		}
 		return reportWithIncomes;
