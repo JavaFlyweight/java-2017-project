@@ -18,12 +18,16 @@ import com.example.java.commons.exceptions.BudgetForbiddenAccessException;
 import com.example.java.commons.exceptions.BudgetNotFoundException;
 import com.example.java.commons.exceptions.PermissionIsAddedAlreadyException;
 import com.example.java.commons.exceptions.PermissionNotFoundException;
+import com.example.java.commons.exceptions.WrongDateValue;
 import com.example.java.commons.exceptions.WrongPermissionTypeException;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.BudgetCreateRequest;
 import com.example.java.domain.model.BudgetEditRequest;
+import com.example.java.domain.model.Expense;
+import com.example.java.domain.model.Income;
 import com.example.java.domain.model.Permission;
 import com.example.java.repository.BudgetRepository;
+import java.util.Date;
 
 @Service
 public class BudgetServiceImpl implements BudgetService {
@@ -36,7 +40,6 @@ public class BudgetServiceImpl implements BudgetService {
     @Autowired
     private UserService userService;
 
-
     @Override
     public Budget getOneById(UUID budgetId, PermissionType... permissionTypes) {
         String userLogin = userService.getLoggedUserLogin();
@@ -48,21 +51,49 @@ public class BudgetServiceImpl implements BudgetService {
         if (!checkPermissionForBudget(budgetToReturn, userLogin, permissionTypes)) {
             throw new BudgetForbiddenAccessException(budgetId);
         }
+        setAddedByUserEmailForBudget(budgetToReturn);
+
         return budgetToReturn;
     }
 
+    private void setAddedByUserEmailForBudget(Budget budgetToReturn) {
+        Set<Expense> expenses = budgetToReturn.getExpenses();
+        Set<Income> incomes = budgetToReturn.getIncomes();
+        incomes.stream().forEach((Income income) -> {
+            if (income.getAddedBy() != null) {
+                income.setAddedByUserEmail(userService.getUser(income.getAddedBy()).getEmail());
+            }
+        });
+        expenses.stream().forEach((Expense expense) -> {
+            if (expense.getAddedBy() != null) {
+                expense.setAddedByUserEmail(userService.getUser(expense.getAddedBy()).getEmail());
+            }
+        });
+        budgetToReturn.setIncomes(incomes);
+        budgetToReturn.setExpenses(expenses);
+    }
 
     @Override
     public Budget createBudgetEntity(BudgetCreateRequest dataToCreateBudget) {
+        validateDateForBudget(dataToCreateBudget);
         Budget budgetToSave = new Budget(dataToCreateBudget.getName(), dataToCreateBudget.getBalance(), dataToCreateBudget.getPlannedAmount(), dataToCreateBudget.getDateFrom(),
                 dataToCreateBudget.getDateTo(), dataToCreateBudget.getImage());
         Set<Permission> permissions = new HashSet<>();
         String userLogin = userService.getLoggedUserLogin();
         permissions.add(new Permission(userLogin, PermissionType.OWNER));
         budgetToSave.setPermissions(permissions);
+        setAddedByUserEmailForBudget(budgetToSave);
         return budgetRepository.save(budgetToSave);
     }
 
+    private void validateDateForBudget(BudgetEditRequest budgetToValidate) {
+        if (budgetToValidate.getDateTo().before(budgetToValidate.getDateFrom())) {
+            throw new WrongDateValue(budgetToValidate.getDateFrom(), budgetToValidate.getDateTo());
+        }
+        if (budgetToValidate.getDateTo().before(new Date())) {
+            throw new WrongDateValue(budgetToValidate.getDateTo());
+        }
+    }
 
     @Override
     public Budget getOneByUserLoginAndOwner() {
@@ -70,30 +101,36 @@ public class BudgetServiceImpl implements BudgetService {
         if (allBudgetByUserLoginAndOwner.isEmpty()) {
             throw new BudgetNotFoundException();
         }
-        return allBudgetByUserLoginAndOwner.get(0);
+        Budget budgetToReturn = allBudgetByUserLoginAndOwner.get(0);
+        setAddedByUserEmailForBudget(budgetToReturn);
+        return budgetToReturn;
     }
 
     @Override
     public List<Budget> getAllByUserLoginAndOwner() {
         String userLogin = userService.getLoggedUserLogin();
         List<Budget> foundBudgets = budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.OWNER);
+        foundBudgets.stream().forEach((foundBudget) -> {
+            setAddedByUserEmailForBudget(foundBudget);
+        });
         return foundBudgets;
     }
-
 
     @Override
     public List<Budget> getSharedBudgets() {
         String userLogin = userService.getLoggedUserLogin();
-        List<Budget> result = new ArrayList<>();
-        result.addAll(budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.EDIT));
-        result.addAll(budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.VIEW));
-
-        return result;
+        List<Budget> sharedBudgets = new ArrayList<>();
+        sharedBudgets.addAll(budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.EDIT));
+        sharedBudgets.addAll(budgetRepository.findAllByUserLoginAndPermission(userLogin, PermissionType.VIEW));
+        sharedBudgets.stream().forEach((sharedBudget) -> {
+            setAddedByUserEmailForBudget(sharedBudget);
+        });
+        return sharedBudgets;
     }
-
 
     @Override
     public Budget editBudgetEntity(UUID budgetId, BudgetEditRequest dataToEditBudget) {
+        validateDateForBudget(dataToEditBudget);
         Budget budgetToEdit = getOneById(budgetId, PermissionType.OWNER, PermissionType.EDIT);
         budgetToEdit.setPlannedAmount(dataToEditBudget.getPlannedAmount());
         budgetToEdit.setDateFrom(dataToEditBudget.getDateFrom());
@@ -103,13 +140,11 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetRepository.save(budgetToEdit);
     }
 
-
     @Override
     public void deleteBudgetEntity(UUID budgetId) {
         Budget budgetToDelete = getOneById(budgetId, PermissionType.OWNER);
         budgetRepository.delete(budgetToDelete);
     }
-
 
     @Override
     public Budget shareBudget(UUID budgetId, String userLoginWithWillGetPermission, PermissionType permissionType) {
@@ -135,7 +170,6 @@ public class BudgetServiceImpl implements BudgetService {
         return budgetRepository.save(budgetToShare);
     }
 
-
     @Override
     public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision) {
         Budget budgetToUnshare = getOneById(budgetId, PermissionType.OWNER);
@@ -144,10 +178,22 @@ public class BudgetServiceImpl implements BudgetService {
             Set<Permission> listToRemovePermission = new HashSet<>(permissions);
             if (permission.getUserLogin().equals(userLoginToRemovePermision)) {
                 listToRemovePermission.remove(permission);
+                budgetToUnshare.setPermissions(listToRemovePermission);
                 return budgetRepository.save(budgetToUnshare);
             }
             permissions = listToRemovePermission;
         }
         throw new PermissionNotFoundException(userLoginToRemovePermision, budgetId);
+    }
+
+    @Override
+    public Budget copyBudget(UUID budgetId) {
+        Budget budgetToCloneBudget = getOneById(budgetId, PermissionType.OWNER, PermissionType.EDIT);
+        Budget cloneBudget = new Budget(budgetToCloneBudget);
+        Set<Permission> permissions = new HashSet<>();
+        String userLogin = userService.getLoggedUserLogin();
+        permissions.add(new Permission(userLogin, PermissionType.OWNER));
+        cloneBudget.setPermissions(permissions);
+        return budgetRepository.save(cloneBudget);
     }
 }

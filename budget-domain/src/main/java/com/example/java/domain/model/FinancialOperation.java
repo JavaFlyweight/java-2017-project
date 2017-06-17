@@ -23,4 +23,8 @@ public abstract class FinancialOperation {
 	@Getter
 	@Setter
 	protected UUID addedBy;
+        
+        @Getter
+	@Setter
+	protected String addedByUserEmail;
 }

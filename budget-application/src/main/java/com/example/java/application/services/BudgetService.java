@@ -26,4 +26,6 @@ public interface BudgetService {
     public Budget shareBudget(UUID budgetId, String userLogin, PermissionType permissionType);
     
     public Budget unshareBudget(UUID budgetId, String userLoginToRemovePermision);
+    
+    public Budget copyBudget(UUID budgetId);
 }
