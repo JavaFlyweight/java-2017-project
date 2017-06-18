@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,27 +33,28 @@ public class ExpenseController {
     @Qualifier("expenseServiceImpl")
     private FinancialOperationService expenseService;
 
-    @RequestMapping(value = "/getAllTypes", method = RequestMethod.GET)
+    @RequestMapping(value = "/types", method = RequestMethod.GET)
     public ResponseEntity<FinancialOperationType[]> getAllExpenseTypes() {
         LOGGER.info("Start getAllExpenseTypes");
         return new ResponseEntity<>(expenseService.getAllFinancialOperationTypes(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseEntity<Budget> addNewExpense(@RequestParam UUID budgetId, @RequestBody Expense expense) {
+    @RequestMapping(value = "/{budgetId}", method = RequestMethod.POST)
+    public ResponseEntity<Budget> addNewExpense(@PathVariable String budgetId, @RequestBody Expense expense) {
         LOGGER.info("Start addNewExpense with budgetId {}", new Object[]{budgetId});
-        return new ResponseEntity<>(expenseService.addNewFinancialOperation(budgetId, expense), HttpStatus.CREATED);
+        return new ResponseEntity<>(expenseService.addNewFinancialOperation(UUID.fromString(budgetId), expense), HttpStatus.CREATED);
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity<Budget> deleteExpense(@RequestParam UUID budgetId, @RequestBody Expense expense) {
+    @RequestMapping(value = "/{budgetId}", method = RequestMethod.DELETE)
+    public ResponseEntity<Budget> deleteExpense(@PathVariable String budgetId, @RequestBody Expense expense) {
         LOGGER.info("Start deleteExpense with budgetId {}", new Object[]{budgetId});
-        return new ResponseEntity<>(expenseService.deleteFinancialOperation(budgetId, expense), HttpStatus.OK);
+        return new ResponseEntity<>(expenseService.deleteFinancialOperation(UUID.fromString(budgetId), expense), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/copyWithNewDate", method = RequestMethod.POST)
-    public ResponseEntity<Expense> copyWithNewDate(UUID budgetId, @RequestBody Expense income, @RequestParam Date newDateTime) {
-        LOGGER.info("Start copyWithNewDate with newDateTime {}", new Object[]{newDateTime});
-        return new ResponseEntity<>((Expense) expenseService.copyWithNewDate(income, newDateTime), HttpStatus.OK);
+    @RequestMapping(value = "/copy", method = RequestMethod.PUT)
+    public ResponseEntity<Budget> copyExpenseWithNewDateForBudget(@RequestBody Expense income, @RequestParam String newDateTime, @RequestParam UUID budgetId) {
+        Date dateTime = new Date(Long.parseLong(newDateTime));
+        LOGGER.info("Start copyWithNewDate with newDateTime {} for budgetId {} ", new Object[]{newDateTime, budgetId });
+        return new ResponseEntity<>(expenseService.addCopiedFinancialOperationWithNewDateToBudget(income, dateTime, budgetId), HttpStatus.OK);
     }
 }

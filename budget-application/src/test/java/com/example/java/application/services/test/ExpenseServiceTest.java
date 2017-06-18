@@ -3,10 +3,12 @@ package com.example.java.application.services.test;
 import com.example.java.application.services.BudgetService;
 import com.example.java.application.services.ExpenseServiceimpl;
 import com.example.java.application.services.FinancialOperationService;
+import com.example.java.application.services.UserService;
 import com.example.java.commons.enums.ExpenseType;
 import com.example.java.commons.enums.PermissionType;
 import com.example.java.domain.model.Budget;
 import com.example.java.domain.model.Expense;
+import com.example.java.domain.model.User;
 import com.example.java.repository.BudgetRepository;
 import java.util.Date;
 import java.util.UUID;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import static org.mockito.Mockito.verify;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExpenseServiceTest {
@@ -32,37 +35,46 @@ public class ExpenseServiceTest {
     @Mock
     private BudgetService budgetService;
 
+    @Mock
+    private UserService userService;
+    
+    
     @InjectMocks
     private final FinancialOperationService expenseService = new ExpenseServiceimpl();
 
     private static final UUID BUDGET_ID = UUID.randomUUID();
     private static final String USER_LOGIN = "abc@wp.pl";
+    private static final UUID USER_ID = UUID.randomUUID();
 
     @Test
     public void shouldAddNewExpense_BugdetsSholdBeTheSame() {
-        final Expense expenseToAdd = new Expense("Lekarz", 150.0, null, ExpenseType.HEALTHCARE, new Date());
+        final Expense expenseToAdd = new Expense("Lekarz", 150.0, USER_ID, ExpenseType.HEALTHCARE, new Date());
         final Budget budgetFromRepository = stubRepositoryToAddNewExpense(expenseToAdd);
         final Budget returnedBudget = expenseService.addNewFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
+        verify(userService, times(1)).getUser(USER_ID);
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
         assertEquals("Returned budget should be the same as mock budget", budgetFromRepository, returnedBudget);
     }
 
     @Test
     public void shouldAddNewExpense_ExpenseSetShouldCorectSize() {
-        final Expense expenseToAdd = new Expense("Lekarz", 150.0, null, ExpenseType.HEALTHCARE, new Date());
+        Date date = new Date();
+        date.setTime(new Date().getTime() + 60*10);
+        final Expense expenseToAdd = new Expense("Lekarz", 150.0, USER_ID, ExpenseType.HEALTHCARE, date);
         stubRepositoryToAddNewExpense(expenseToAdd);
         final Budget returnedBudget = expenseService.addNewFinancialOperation(BUDGET_ID, expenseToAdd);
 
         verify(budgetRepository, times(1)).save(any(Budget.class));
+        verify(userService, times(1)).getUser(USER_ID);
         verify(budgetService, times(1)).getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT);
         assertEquals("Returned expense size should has correct size", returnedBudget.getExpenses().size(), 5);
     }
 
     @Test
     public void shouldDeleteExpense_BugdetsSholdBeTheSame() {
-        final Expense expenseToAdd = new Expense("Lekarz", 150.0, UUID.randomUUID(), ExpenseType.HEALTHCARE, new Date());
+        final Expense expenseToAdd = new Expense("Lekarz", 150.0, USER_ID, ExpenseType.HEALTHCARE, new Date());
         final Budget budgetFromRepository = stubRepositoryToDeleteExpense(expenseToAdd);
         final Budget returnedBudget = expenseService.deleteFinancialOperation(BUDGET_ID, expenseToAdd);
 
@@ -73,7 +85,7 @@ public class ExpenseServiceTest {
 
     @Test
     public void shouldDeleteExpense_ExpenseSetShouldCorectSize() {
-        final Expense expenseToAdd = new Expense("Lekarz", 150.0, UUID.randomUUID(), ExpenseType.HEALTHCARE, new Date());
+        final Expense expenseToAdd = new Expense("Lekarz", 150.0, USER_ID, ExpenseType.HEALTHCARE, new Date());
         stubRepositoryToDeleteExpense(expenseToAdd);
         final Budget returnedBudget = expenseService.deleteFinancialOperation(BUDGET_ID, expenseToAdd);
 
@@ -86,6 +98,7 @@ public class ExpenseServiceTest {
         final Budget budgetFromRepository = BudgetTestUtils.createBudgetEntityForTestExpensesAndIncome(USER_LOGIN);
         final Budget budgetToSave = BudgetTestUtils.createBudgeWithAdditionalExpense(budgetFromRepository, expenseToAdd);
         when(budgetService.getOneById(BUDGET_ID, PermissionType.OWNER, PermissionType.EDIT)).thenReturn(budgetFromRepository);
+        when(userService.getUser(USER_ID)).thenReturn(new User("Piotr", "Maciej", USER_LOGIN, null, null));
         when(budgetRepository.save(any(Budget.class))).thenReturn(budgetToSave);
         return budgetToSave;
     }

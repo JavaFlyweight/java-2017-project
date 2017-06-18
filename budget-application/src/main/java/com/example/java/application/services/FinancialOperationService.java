@@ -14,5 +14,5 @@ public interface FinancialOperationService {
 
     public Budget deleteFinancialOperation(UUID budgetId, FinancialOperation financialOperatioToDelete); 
     
-    public FinancialOperation copyWithNewDate (FinancialOperation financialOperatioToCopy, Date newDateTime);
+    public Budget addCopiedFinancialOperationWithNewDateToBudget (FinancialOperation financialOperatioToCopy, Date newDateTime, UUID budgetId);
 }
