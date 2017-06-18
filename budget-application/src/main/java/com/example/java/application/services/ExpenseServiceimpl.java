@@ -68,7 +68,7 @@ public class ExpenseServiceimpl implements FinancialOperationService {
         Set<Expense> expenses = budgetToCopyExpense.getExpenses();
         Expense newExpense = new Expense((Expense) expenseToCopy);
         newExpense.setDateTime(newDateTime);
-        expenses.add((Expense) expenseToCopy);
+        expenses.add((Expense) newExpense);
         budgetToCopyExpense.setExpenses(expenses);
  
        return budgetRepository.save(budgetToCopyExpense);

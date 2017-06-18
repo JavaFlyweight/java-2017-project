@@ -69,7 +69,7 @@ public class IncomeServiceimpl implements FinancialOperationService {
         Set<Income> incomes = budgetToCopyIncome.getIncomes();
         Income newIncome = new Income((Income) incomeToCopy);
         newIncome.setDateTime(newDateTime);
-        incomes.add((Income) incomeToCopy);
+        incomes.add((Income) newIncome);
         budgetToCopyIncome.setIncomes(incomes);
  
        return budgetRepository.save(budgetToCopyIncome);
