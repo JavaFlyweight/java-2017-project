@@ -119,23 +119,23 @@ public class UserServiceImpl implements UserService {
         String password = userCreateRequest.getPassword();
         String image = userCreateRequest.getImage();
 
-        if (!name.isEmpty() && name != null) {
+        if (name != null && !name.isEmpty()) {
             actualUser.setName(name);
         }
 
-        if (!lastName.isEmpty() && lastName != null) {
+        if (lastName != null && !lastName.isEmpty()) {
             actualUser.setLastName(lastName);
         }
 
-        if (!email.isEmpty() && email != null) {
+        if (email != null && !email.isEmpty()) {
             actualUser.setEmail(email);
         }
 
-        if (!password.isEmpty() && password != null) {
+        if (password != null && !password.isEmpty()) {
             actualUser.setPassword(password);
         }
 
-        if (!image.isEmpty() && image != null) {
+        if (image != null && !image.isEmpty()) {
             actualUser.setImage(image);
         }
 
